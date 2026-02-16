@@ -83,6 +83,13 @@ body {
   font-weight: normal;
 }
 
+.sidebar-empty {
+  padding: 30px 20px;
+  text-align: center;
+  color: #a0aec0;
+  font-size: 0.9rem;
+}
+
 /* メインエリア */
 .main-content {
   flex-grow: 1;
@@ -186,10 +193,28 @@ button:disabled {
   padding-bottom: 15px;
 }
 
-.series-title {
+/* 編集可能なタイトル */
+.series-title-input {
   font-size: 1.5rem;
   font-weight: bold;
-  margin: 0;
+  margin-right: 10%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  flex-grow: 1;
+  padding: 5px;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+}
+
+.series-title-input:hover {
+  border-color: #e2e8f0;
+}
+
+.series-title-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
 }
 
 .delete-list-btn {
@@ -208,7 +233,7 @@ button:disabled {
   color: #a0aec0;
   border: 1px solid #cbd5e0;
   padding: 5px 10px;
-  margin-left: 132px;
+  margin-left: 125px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.7rem;

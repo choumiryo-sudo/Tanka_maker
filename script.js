@@ -36,6 +36,11 @@ function renderSidebar() {
   const listEl = document.getElementById("sidebarList");
   listEl.innerHTML = "";
 
+  if (lists.length === 0) {
+    listEl.innerHTML = '<li class="sidebar-empty">作品がありません</li>';
+    return;
+  }
+
   lists.forEach((series) => {
     const li = document.createElement("li");
     li.className = `sidebar-item ${series.id === activeSeriesId ? "active" : ""}`;
@@ -83,7 +88,10 @@ function renderActiveSeries() {
 
   seriesEl.innerHTML = `
             <div class="series-header">
-                <h2 class="series-title">${escapeHtml(series.title)}</h2>
+                <input type="text" class="series-title-input" 
+                       value="${escapeHtml(series.title)}" 
+                       onchange="updateSeriesTitle(this.value)"
+                       placeholder="タイトルを入力">
                 <button class="delete-list-btn" onclick="deleteCurrentSeries()">このリストを削除</button>
             </div>
             <ul class="tanka-list" id="current-tanka-list"></ul>
@@ -195,6 +203,15 @@ function createNewSeries() {
   // 入力フォームをクリア
   titleInput.value = "";
   textInput.value = "";
+}
+
+function updateSeriesTitle(newTitle) {
+  const series = lists.find((l) => l.id === activeSeriesId);
+  if (!series) return;
+
+  series.title = newTitle || "無題";
+  saveData();
+  renderSidebar(); // サイドバーのタイトルも即座に更新
 }
 
 // 現在表示中の連作を削除
