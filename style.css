@@ -203,7 +203,20 @@ button:disabled {
   transition: all 0.2s;
 }
 
-.delete-list-btn:hover {
+.delete-list-btn-side {
+  background-color: transparent;
+  color: #a0aec0;
+  border: 1px solid #cbd5e0;
+  padding: 5px 10px;
+  margin-left: 132px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  transition: all 0.2s;
+}
+
+.delete-list-btn:hover,
+.delete-list-btn-side:hover {
   color: #fff;
   background-color: var(--accent);
   border-color: var(--accent);
@@ -376,5 +389,8 @@ button:disabled {
   .main-content {
     padding: 15px;
     overflow: visible;
+  }
+  .delete-list-btn-side {
+    margin-left: 20px;
   }
 }

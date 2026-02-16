@@ -46,7 +46,9 @@ function renderSidebar() {
 
     li.innerHTML = `
                 <div>${escapeHtml(series.title)}</div>
-                <span class="item-date">${dateStr}</span>
+                <span class="item-date">${dateStr}
+                <button class="delete-list-btn-side" onclick="deleteCurrentSeries()">削除</button>
+                </span>
             `;
 
     li.onclick = () => {
