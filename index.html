@@ -14,26 +14,42 @@
       <small>（初回は数秒かかる場合があります）</small>
     </div>
 
-    <div class="container">
-      <h1>短歌推敲用サイト</h1>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>作品一覧</h2>
+        </div>
+        <ul class="sidebar-list" id="sidebarList"></ul>
+      </aside>
 
-      <div class="input-area">
-        <input type="text" id="inputTitle" placeholder="連作のタイトルを入力" />
-        <textarea
-          id="inputText"
-          placeholder="ここに短歌を入力してください。&#13;&#10;改行ごとに一首として認識され、自動で読みと音数を計算します。"
-        ></textarea>
-        <button
-          class="primary-btn"
-          id="createBtn"
-          onclick="createNewSeries()"
-          disabled
-        >
-          完成（リスト作成）
-        </button>
-      </div>
+      <main class="main-content">
+        <div class="input-area">
+          <h3>新しい連作を作る</h3>
+          <input
+            type="text"
+            id="inputTitle"
+            placeholder="連作のタイトルを入力（例：夏の終わり）"
+          />
+          <textarea
+            id="inputText"
+            placeholder="ここに短歌を入力してください。&#13;&#10;改行ごとに一首として認識されます。"
+          ></textarea>
+          <button
+            class="primary-btn"
+            id="createBtn"
+            onclick="createNewSeries()"
+            disabled
+          >
+            完成（リスト作成）
+          </button>
+        </div>
 
-      <div id="listsContainer"></div>
+        <div class="series-detail-container" id="activeListContainer">
+          <div class="empty-state">
+            左のリストから作品を選択するか、<br />新しい連作を作成してください。
+          </div>
+        </div>
+      </main>
     </div>
 
     <script src="script.js"></script>

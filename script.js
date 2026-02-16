@@ -1,9 +1,15 @@
 // --- グローバル変数 ---
 let lists = JSON.parse(localStorage.getItem("utayomi_data")) || [];
+let activeSeriesId = null; // 現在表示中の連作ID
 let tokenizer = null; // 形態素解析器
 
+// 初期選択（データがあれば最新のものを選択）
+if (lists.length > 0) {
+  activeSeriesId = lists[0].id;
+}
+
 // --- 初期化処理 (Kuromojiのロード) ---
-const DIC_URL = "https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict/";
+const DIC_URL = "https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/build/../dict/";
 
 kuromoji.builder({ dicPath: DIC_URL }).build(function (err, _tokenizer) {
   if (err) {
@@ -16,10 +22,130 @@ kuromoji.builder({ dicPath: DIC_URL }).build(function (err, _tokenizer) {
   tokenizer = _tokenizer;
   document.getElementById("loading-overlay").style.display = "none";
   document.getElementById("createBtn").disabled = false;
-  renderAllLists();
+  renderApp();
 });
 
-// --- メイン機能 ---
+// --- メイン描画処理 ---
+function renderApp() {
+  renderSidebar();
+  renderActiveSeries();
+}
+
+// サイドバーの描画
+function renderSidebar() {
+  const listEl = document.getElementById("sidebarList");
+  listEl.innerHTML = "";
+
+  lists.forEach((series) => {
+    const li = document.createElement("li");
+    li.className = `sidebar-item ${series.id === activeSeriesId ? "active" : ""}`;
+
+    // 日付フォーマット
+    const date = new Date(series.id);
+    const dateStr = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+
+    li.innerHTML = `
+                <div>${escapeHtml(series.title)}</div>
+                <span class="item-date">${dateStr}</span>
+            `;
+
+    li.onclick = () => {
+      activeSeriesId = series.id;
+      renderApp();
+    };
+
+    listEl.appendChild(li);
+  });
+}
+
+// 選択された連作（メインエリア）の描画
+function renderActiveSeries() {
+  const container = document.getElementById("activeListContainer");
+  container.innerHTML = "";
+
+  if (!activeSeriesId) {
+    container.innerHTML = `<div class="empty-state">作品がありません。<br>新しい連作を作成してください。</div>`;
+    return;
+  }
+
+  const series = lists.find((l) => l.id === activeSeriesId);
+  if (!series) {
+    // IDが見つからない場合（削除後など）
+    container.innerHTML = `<div class="empty-state">選択された作品が見つかりません。</div>`;
+    return;
+  }
+
+  // 連作カードの生成
+  const seriesEl = document.createElement("div");
+  seriesEl.className = "series-card";
+
+  seriesEl.innerHTML = `
+            <div class="series-header">
+                <h2 class="series-title">${escapeHtml(series.title)}</h2>
+                <button class="delete-list-btn" onclick="deleteCurrentSeries()">このリストを削除</button>
+            </div>
+            <ul class="tanka-list" id="current-tanka-list"></ul>
+        `;
+
+  container.appendChild(seriesEl);
+
+  const ulElement = seriesEl.querySelector("#current-tanka-list");
+
+  // 短歌アイテムの生成
+  series.items.forEach((item, itemIndex) => {
+    const li = document.createElement("li");
+    li.className = "tanka-item";
+    li.dataset.id = item.id;
+
+    li.innerHTML = `
+                <div class="drag-handle-icon">⋮⋮</div>
+                
+                <input type="text" class="tanka-content" 
+                       value="${escapeHtml(item.text)}" 
+                       onchange="updateItemText(${itemIndex}, this.value)"
+                       placeholder="短歌を入力">
+                
+                <div class="meta-info">
+                    <span class="reading-label">よみ:</span>
+                    <input type="text" class="reading-input"
+                           value="${escapeHtml(item.reading)}"
+                           onchange="updateItemReading(${itemIndex}, this.value)"
+                           placeholder="読み仮名（ひらがな）">
+                    <span class="count-badge" id="count-${item.id}">${item.count}</span>
+                </div>
+
+                <div class="history-section">
+                    <span class="history-btn" onclick="toggleHistory(this)">変更履歴 (${item.history.length})</span>
+                    <div class="history-panel">
+                        ${
+                          item.history.length === 0
+                            ? "履歴はありません"
+                            : item.history
+                                .map(
+                                  (h, i) =>
+                                    `<div class="history-row"><small>${i + 1}:</small> ${escapeHtml(h)}</div>`,
+                                )
+                                .join("")
+                        }
+                    </div>
+                </div>
+            `;
+    ulElement.appendChild(li);
+  });
+
+  // SortableJSの適用
+  new Sortable(ulElement, {
+    animation: 150,
+    handle: ".drag-handle-icon",
+    onEnd: function (evt) {
+      const movedItem = series.items.splice(evt.oldIndex, 1)[0];
+      series.items.splice(evt.newIndex, 0, movedItem);
+      saveData();
+    },
+  });
+}
+
+// --- データ操作ロジック ---
 
 // 新しい連作を作成
 function createNewSeries() {
@@ -52,108 +178,89 @@ function createNewSeries() {
     };
   });
 
+  const newSeriesId = Date.now();
   const newSeries = {
-    id: Date.now(),
+    id: newSeriesId,
     title: title,
     items: items,
   };
 
   lists.unshift(newSeries);
+  activeSeriesId = newSeriesId; // 新しいリストを選択状態にする
   saveData();
-  renderAllLists();
+  renderApp();
 
+  // 入力フォームをクリア
   titleInput.value = "";
   textInput.value = "";
 }
 
-// 全リスト描画
-function renderAllLists() {
-  const container = document.getElementById("listsContainer");
-  container.innerHTML = "";
+// 現在表示中の連作を削除
+function deleteCurrentSeries() {
+  if (!activeSeriesId) return;
 
-  lists.forEach((series, seriesIndex) => {
-    const seriesEl = document.createElement("div");
-    seriesEl.className = "series-card";
+  if (confirm("この作品を本当に削除しますか？\n（削除すると元に戻せません）")) {
+    const index = lists.findIndex((l) => l.id === activeSeriesId);
+    if (index > -1) {
+      lists.splice(index, 1);
 
-    seriesEl.innerHTML = `
-                <div class="series-header">
-                    <h2 class="series-title">${escapeHtml(series.title)}</h2>
-                    <button class="delete-list-btn" onclick="deleteSeries(${seriesIndex})">リスト削除</button>
-                </div>
-                <ul class="tanka-list" id="list-${series.id}"></ul>
-            `;
+      // 削除後の選択ロジック（次があれば次、なければ前、なければnull）
+      if (lists.length > 0) {
+        // 同じ位置の要素（元々次だったもの）か、最後尾なら一つ前
+        const nextIndex = Math.min(index, lists.length - 1);
+        activeSeriesId = lists[nextIndex].id;
+      } else {
+        activeSeriesId = null;
+      }
 
-    container.appendChild(seriesEl);
-
-    const ulElement = seriesEl.querySelector(`#list-${series.id}`);
-
-    series.items.forEach((item, itemIndex) => {
-      const li = document.createElement("li");
-      li.className = "tanka-item";
-      li.dataset.id = item.id;
-
-      li.innerHTML = `
-                    <div class="drag-handle-icon">⋮⋮</div>
-                    
-                    <input type="text" class="tanka-content" 
-                           value="${escapeHtml(item.text)}" 
-                           onchange="updateItemText(${seriesIndex}, ${itemIndex}, this.value)"
-                           placeholder="短歌を入力">
-                    
-                    <div class="meta-info">
-                        <input type="text" class="reading-input"
-                               value="${escapeHtml(item.reading)}"
-                               onchange="updateItemReading(${seriesIndex}, ${itemIndex}, this.value)"
-                               placeholder="読み仮名（ひらがな）">
-                        <span class="count-badge" id="count-${item.id}">${
-                          item.count
-                        }</span>
-                    </div>
-
-                    <div class="history-section">
-                        <span class="history-btn" onclick="toggleHistory(this)">変更履歴 (${
-                          item.history.length
-                        })</span>
-                        <div class="history-panel">
-                            ${
-                              item.history.length === 0
-                                ? "履歴はありません"
-                                : item.history
-                                    .map(
-                                      (h, i) =>
-                                        `<div class="history-row"><small>${
-                                          i + 1
-                                        }:</small> ${escapeHtml(h)}</div>`,
-                                    )
-                                    .join("")
-                            }
-                        </div>
-                    </div>
-                `;
-      ulElement.appendChild(li);
-    });
-
-    // ★修正ポイント: handleオプションを指定
-    new Sortable(ulElement, {
-      animation: 150,
-      handle: ".drag-handle-icon", // ここを指定することで、アイコン以外ではドラッグしなくなります
-      onEnd: function (evt) {
-        const movedItem = series.items.splice(evt.oldIndex, 1)[0];
-        series.items.splice(evt.newIndex, 0, movedItem);
-        saveData();
-      },
-    });
-  });
+      saveData();
+      renderApp();
+    }
+  }
 }
 
-// --- ロジック関数群 ---
+// 本文更新
+function updateItemText(itemIndex, newText) {
+  const series = lists.find((l) => l.id === activeSeriesId);
+  if (!series) return;
+
+  const item = series.items[itemIndex];
+  if (item.text === newText) return;
+
+  item.history.push(item.text);
+  item.text = newText;
+
+  // 読みと音数も更新
+  const newReading = getReadingFromText(newText);
+  item.reading = newReading;
+  item.count = countMora(newReading);
+
+  saveData();
+  renderActiveSeries(); // 再描画
+}
+
+// 読み仮名更新
+function updateItemReading(itemIndex, newReading) {
+  const series = lists.find((l) => l.id === activeSeriesId);
+  if (!series) return;
+
+  const item = series.items[itemIndex];
+  item.reading = newReading;
+  item.count = countMora(newReading);
+
+  // バッジ更新
+  const badge = document.getElementById(`count-${item.id}`);
+  if (badge) badge.textContent = item.count;
+
+  saveData();
+}
+
+// --- ユーティリティ ---
 
 function getReadingFromText(text) {
   if (!tokenizer) return text;
-
   const tokens = tokenizer.tokenize(text);
   let reading = "";
-
   tokens.forEach((token) => {
     if (token.reading) {
       reading += token.reading;
@@ -161,7 +268,6 @@ function getReadingFromText(text) {
       reading += token.surface_form;
     }
   });
-
   return kataToHira(reading);
 }
 
@@ -175,61 +281,14 @@ function kataToHira(str) {
 function countMora(text) {
   let clean = text.replace(/[^ぁ-んァ-ンー]/g, "");
   clean = kataToHira(clean);
-
   if (!clean) return 0;
-
   let processed = clean.replace(/[ぁ-ん][ゃゅょ]/g, "*");
   return processed.length;
-}
-
-// --- 更新処理 ---
-
-// ★修正箇所：本文更新時に読みと音数も更新
-function updateItemText(seriesIndex, itemIndex, newText) {
-  const series = lists[seriesIndex];
-  const item = series.items[itemIndex];
-  if (item.text === newText) return;
-
-  // 履歴に保存
-  item.history.push(item.text);
-
-  // テキストを更新
-  item.text = newText;
-
-  // 読み仮名と音数を自動再計算して更新
-  const newReading = getReadingFromText(newText);
-  item.reading = newReading;
-  item.count = countMora(newReading);
-
-  saveData();
-  renderAllLists();
-}
-
-// 読み仮名の手動修正用
-function updateItemReading(seriesIndex, itemIndex, newReading) {
-  const series = lists[seriesIndex];
-  const item = series.items[itemIndex];
-
-  item.reading = newReading;
-  item.count = countMora(newReading);
-
-  const badge = document.getElementById(`count-${item.id}`);
-  if (badge) badge.textContent = item.count;
-
-  saveData();
 }
 
 function toggleHistory(btn) {
   const panel = btn.nextElementSibling;
   panel.classList.toggle("active");
-}
-
-function deleteSeries(index) {
-  if (confirm("本当に削除しますか？")) {
-    lists.splice(index, 1);
-    saveData();
-    renderAllLists();
-  }
 }
 
 function saveData() {
