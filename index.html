@@ -3,17 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>短歌推敲用サイト</title>
+    <title>短歌連作推敲ツール</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/build/kuromoji.js"></script>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <header>
+      <h1>短歌連作推敲ツール</h1>
+      <input type="checkbox" id="popup" />
+      <label class="popup-open" for="popup">？</label>
+      <div class="popup-overlay">
+        <div class="popup-window">
+          <div class="popup-text">
+            <h3>このサイトの使い方</h3>
+            <p>短歌（主に連作）を作成・推敲するためのサイトです。</p>
+          </div>
+          <label class="popup-close" for="popup">
+            <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+              <line
+                x1="0"
+                y1="0"
+                x2="18"
+                y2="18"
+                stroke="white"
+                stroke-width="3"
+              ></line>
+              <line
+                x1="0"
+                y1="18"
+                x2="18"
+                y2="0"
+                stroke="white"
+                stroke-width="3"
+              ></line>
+            </svg>
+          </label>
+        </div>
+      </div>
+    </header>
     <div id="loading-overlay">
       <div>辞書データを読み込んでいます...</div>
       <small>（初回は数秒かかる場合があります）</small>
     </div>
-
     <div class="app-container">
       <aside class="sidebar">
         <div class="sidebar-header">
@@ -28,7 +60,7 @@
           <input
             type="text"
             id="inputTitle"
-            placeholder="連作のタイトルを入力（例：夏の終わり）"
+            placeholder="連作のタイトルを入力"
           />
           <textarea
             id="inputText"
@@ -40,7 +72,7 @@
             onclick="createNewSeries()"
             disabled
           >
-            完成（リスト作成）
+            完成
           </button>
         </div>
 
