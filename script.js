@@ -184,18 +184,28 @@ function countMora(text) {
 
 // --- 更新処理 ---
 
+// ★修正箇所：本文更新時に読みと音数も更新
 function updateItemText(seriesIndex, itemIndex, newText) {
   const series = lists[seriesIndex];
   const item = series.items[itemIndex];
   if (item.text === newText) return;
 
+  // 履歴に保存
   item.history.push(item.text);
+
+  // テキストを更新
   item.text = newText;
+
+  // 読み仮名と音数を自動再計算して更新
+  const newReading = getReadingFromText(newText);
+  item.reading = newReading;
+  item.count = countMora(newReading);
 
   saveData();
   renderAllLists();
 }
 
+// 読み仮名の手動修正用
 function updateItemReading(seriesIndex, itemIndex, newReading) {
   const series = lists[seriesIndex];
   const item = series.items[itemIndex];
