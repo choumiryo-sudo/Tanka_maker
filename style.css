@@ -144,6 +144,10 @@ textarea {
   font-size: 1rem;
 }
 
+input.tanka-content {
+  width: 80%;
+}
+
 textarea {
   height: 120px;
   resize: vertical;
@@ -279,7 +283,6 @@ button:disabled {
   resize: none;
   font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
   margin-bottom: 10px;
-  padding-right: 30px; /* ハンドル用余白 */
   line-height: 1.8;
 }
 
@@ -367,8 +370,8 @@ button:disabled {
 /* ドラッグハンドル */
 .drag-handle-icon {
   position: absolute;
-  right: 0px;
-  top: 0px;
+  right: 45px; /* 削除ボタンの左に配置 */
+  top: 15px;
   padding: 15px 20px;
   color: #cbd5e0;
   cursor: grab;
@@ -385,6 +388,45 @@ button:disabled {
 
 .drag-handle-icon:active {
   cursor: grabbing;
+}
+
+.delete-item-btn {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  background: transparent;
+  border: none;
+  color: #cbd5e0;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.delete-item-btn:hover {
+  color: var(--accent);
+}
+
+/* 追加ボタン */
+.add-item-btn {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8fafc;
+  border: 2px dashed #cbd5e0;
+  border-radius: 6px;
+  color: #718096;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-item-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: #edf2f7;
 }
 
 /* メッセージ */

@@ -95,6 +95,7 @@ function renderActiveSeries() {
                 <button class="delete-list-btn" onclick="deleteCurrentSeries()">このリストを削除</button>
             </div>
             <ul class="tanka-list" id="current-tanka-list"></ul>
+            <button class="add-item-btn" onclick="addEmptyItem()">＋ 新しい短歌を追加</button>
         `;
 
   container.appendChild(seriesEl);
@@ -109,6 +110,7 @@ function renderActiveSeries() {
 
     li.innerHTML = `
                 <div class="drag-handle-icon">⋮⋮</div>
+                <button class="delete-item-btn" onclick="deleteItem(${itemIndex})" title="この一首を削除">×</button>
                 
                 <input type="text" class="tanka-content" 
                        value="${escapeHtml(item.text)}" 
@@ -235,6 +237,34 @@ function deleteCurrentSeries() {
       saveData();
       renderApp();
     }
+  }
+}
+
+function addEmptyItem() {
+  const series = lists.find((l) => l.id === activeSeriesId);
+  if (!series) return;
+
+  series.items.push({
+    id: generateId(),
+    text: "",
+    reading: "",
+    count: 0,
+    history: [],
+  });
+
+  saveData();
+  renderActiveSeries();
+}
+
+// ★追加: 指定した短歌アイテムを削除
+function deleteItem(itemIndex) {
+  const series = lists.find((l) => l.id === activeSeriesId);
+  if (!series) return;
+
+  if (confirm("この一首を削除しますか？")) {
+    series.items.splice(itemIndex, 1);
+    saveData();
+    renderActiveSeries();
   }
 }
 
