@@ -1,0 +1,258 @@
+:root {
+  --primary: #4a5568;
+  --accent: #e53e3e;
+  --bg: #f7fafc;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --text: #2d3748;
+  --sub-text: #718096;
+}
+
+body {
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: var(--primary);
+}
+
+/* ローディング表示 */
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  flex-direction: column;
+}
+
+/* 入力エリア */
+.input-area {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+textarea {
+  height: 150px;
+  resize: vertical;
+}
+
+button.primary-btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 100%;
+  transition: background 0.2s;
+}
+
+button.primary-btn:hover {
+  background-color: #2d3748;
+}
+
+button:disabled {
+  background-color: #cbd5e0;
+  cursor: not-allowed;
+}
+
+/* 連作リストエリア */
+.series-card {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border-top: 4px solid var(--primary);
+}
+
+.series-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+
+.series-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.delete-list-btn {
+  background-color: transparent;
+  color: #a0aec0;
+  border: 1px solid #cbd5e0;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.delete-list-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* 短歌アイテム */
+.tanka-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tanka-item {
+  background: #fff;
+  border: 1px solid var(--border);
+  margin-bottom: 15px;
+  border-radius: 4px;
+  padding: 20px;
+  position: relative;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  /* cursor: move;  ←ここを削除（全体ドラッグ不可に） */
+}
+
+.tanka-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.tanka-content {
+  font-size: 1.2rem;
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  resize: none;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  margin-bottom: 5px;
+  padding-right: 30px; /* ハンドルと被らないように余白確保 */
+}
+
+.tanka-content:focus {
+  border-bottom: 1px dashed var(--primary);
+}
+
+/* 読み仮名と音数エリア */
+.meta-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px dotted #edf2f7;
+}
+
+.reading-input {
+  border: none;
+  background: transparent;
+  color: var(--sub-text);
+  font-size: 0.85rem;
+  flex-grow: 1;
+  padding: 2px 0;
+}
+
+.reading-input:focus {
+  outline: none;
+  color: var(--text);
+  background: #f7fafc;
+}
+
+.count-badge {
+  font-size: 0.85rem;
+  background: #edf2f7;
+  color: var(--primary);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: bold;
+  min-width: 2em;
+  text-align: center;
+}
+
+/* 履歴表示 */
+.history-btn {
+  font-size: 0.8rem;
+  color: #718096;
+  cursor: pointer;
+  margin-top: 8px;
+  display: inline-block;
+  text-decoration: underline;
+}
+
+.history-panel {
+  display: none;
+  margin-top: 10px;
+  background: #f7fafc;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+.history-panel.active {
+  display: block;
+}
+
+.history-row {
+  border-bottom: 1px dotted #cbd5e0;
+  padding: 4px 0;
+}
+
+/* ドラッグハンドルのスタイル調整 */
+.drag-handle-icon {
+  position: absolute;
+  right: 0px; /* クリックしやすいように右端に配置 */
+  top: 0px;
+  padding: 10px 15px; /* クリック可能領域を広げる */
+  color: #cbd5e0;
+  cursor: grab; /* 掴めることを示すカーソル */
+  font-size: 1.2rem;
+  user-select: none; /* アイコン自体のテキスト選択を禁止 */
+}
+
+.drag-handle-icon:hover {
+  color: var(--primary);
+  background-color: #f7fafc;
+  border-bottom-left-radius: 8px;
+}
+
+.drag-handle-icon:active {
+  cursor: grabbing;
+}

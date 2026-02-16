@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>短歌推敲用サイト</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/build/kuromoji.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="loading-overlay">
+      <div>辞書データを読み込んでいます...</div>
+      <small>（初回は数秒かかる場合があります）</small>
+    </div>
+
+    <div class="container">
+      <h1>短歌推敲用サイト</h1>
+
+      <div class="input-area">
+        <input type="text" id="inputTitle" placeholder="連作のタイトルを入力" />
+        <textarea
+          id="inputText"
+          placeholder="ここに短歌を入力してください。&#13;&#10;改行ごとに一首として認識され、自動で読みと音数を計算します。"
+        ></textarea>
+        <button
+          class="primary-btn"
+          id="createBtn"
+          onclick="createNewSeries()"
+          disabled
+        >
+          完成（リスト作成）
+        </button>
+      </div>
+
+      <div id="listsContainer"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
