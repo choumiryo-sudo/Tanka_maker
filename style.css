@@ -530,6 +530,10 @@ button:disabled {
   margin-bottom: -10px;
 }
 
+.explanation-h3:nth-child(1) {
+  margin-top: 0;
+}
+
 .explanation {
   font-size: 15px;
 }
