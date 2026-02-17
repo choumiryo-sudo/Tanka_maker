@@ -489,7 +489,7 @@ button:disabled {
 .popup-window {
   width: 90vw;
   max-width: 560px;
-  padding: 20px;
+  padding: 30px;
   background-color: #ffffff;
   border-radius: 6px;
   position: fixed;
@@ -511,6 +511,19 @@ button:disabled {
   position: absolute;
   top: -26px;
   right: 0;
+}
+
+.explanation-h5 {
+  margin-bottom: -10px;
+  border-bottom: solid 1px var(--border);
+}
+
+.explanation-h3 {
+  margin-bottom: -10px;
+}
+
+.explanation {
+  font-size: 15px;
 }
 
 /* レスポンシブ対応（スマホ） */
