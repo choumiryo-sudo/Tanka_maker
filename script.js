@@ -92,7 +92,9 @@ function renderActiveSeries() {
                        value="${escapeHtml(series.title)}" 
                        onchange="updateSeriesTitle(this.value)"
                        placeholder="タイトルを入力">
-                <button class="delete-list-btn" onclick="deleteCurrentSeries()">このリストを削除</button>
+
+                       <button class="preview-btn" onclick="openPreview()">プレビュー</button>
+                <button class="delete-list-btn" onclick="deleteCurrentSeries()">リスト削除</button>
             </div>
             <ul class="tanka-list" id="current-tanka-list"></ul>
             <button class="add-item-btn" onclick="addEmptyItem()">＋ 新しい短歌を追加</button>
@@ -359,4 +361,14 @@ function escapeHtml(str) {
       "'": "&#039;",
     }[match];
   });
+}
+
+// --- プレビュー機能 ---
+function openPreview() {
+  if (!activeSeriesId) return;
+  // 変更を確実に保存してから開く
+  saveData();
+  // 新しいウィンドウ（preview.html）を開き、URLの後ろにIDをつける
+  // 例: preview.html?id=1708055555555
+  window.open(`preview.html?id=${activeSeriesId}`, "_blank");
 }

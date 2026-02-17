@@ -204,6 +204,7 @@ button:disabled {
   padding: 30px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border-top: 4px solid var(--primary);
+  margin-bottom: 50px;
 }
 
 .series-header {
@@ -239,7 +240,8 @@ button:disabled {
   background: #fff;
 }
 
-.delete-list-btn {
+.delete-list-btn,
+.preview-btn {
   background-color: transparent;
   color: #a0aec0;
   border: 1px solid #cbd5e0;
@@ -248,6 +250,8 @@ button:disabled {
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.2s;
+  margin-right: 10px;
+  width: 120px;
 }
 
 .delete-list-btn-side {
@@ -267,6 +271,10 @@ button:disabled {
   color: #fff;
   background-color: var(--accent);
   border-color: var(--accent);
+}
+
+.preview-btn:hover {
+  background-color: var(--bg);
 }
 
 /* 短歌アイテム */
