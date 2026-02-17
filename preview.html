@@ -12,28 +12,26 @@
       rel="stylesheet"
     />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 
     <style>
       :root {
-        /* デフォルト設定（CSS変数で管理） */
         --bg-color: #fcfcfc;
         --text-color: #333333;
         --main-font: "Shippori Mincho", serif;
       }
 
       body {
-        background-color: #e0e0e0; /* アプリ背景色（プレビュー領域と区別するため少し暗く） */
+        background-color: #e0e0e0;
         margin: 0;
         padding: 0;
         height: 100vh;
-        overflow: hidden; /* 全体のスクロールは禁止し、プレビューエリアのみスクロールさせる */
+        overflow: hidden;
         font-family: sans-serif;
         display: flex;
         flex-direction: column;
       }
 
-      /* ツールバー（設定エリア） */
       .toolbar {
         background: #fff;
         padding: 10px 20px;
@@ -66,7 +64,7 @@
       }
 
       button.download-btn {
-        margin-left: auto; /* 右寄せ */
+        margin-left: auto;
         background-color: #333;
         color: #fff;
         border: none;
@@ -79,73 +77,54 @@
       button.download-btn:hover {
         background-color: #555;
       }
+      /* ボタンが無効化されている時のスタイル */
+      button.download-btn:disabled {
+        background-color: #999;
+        cursor: not-allowed;
+      }
 
-      /* プレビュー表示エリアのラッパー */
       .preview-wrapper {
         flex: 1;
-        overflow: auto; /* ここでスクロールさせる */
+        overflow: auto;
         display: flex;
-        justify-content: center; /* 中央配置 */
+        justify-content: center;
         align-items: center;
         padding: 40px;
       }
 
-      /* 実際に画像化される紙のエリア */
       #capture-target {
-        /* CSS変数を使用 */
         background-color: var(--bg-color);
         color: var(--text-color);
         font-family: var(--main-font);
-
-        /* 縦書き設定 */
         writing-mode: vertical-rl;
 
-        /* サイズと余白 */
-        height: 80vh; /* 画面の高さの80%を基準にする */
-        padding: 3rem; /* 紙の余白 */
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* 浮き上がり効果 */
+        min-height: 80vh;
+        padding: 3rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         box-sizing: border-box;
 
-        /* 横幅は中身（短歌の数）に応じて自動で伸びる */
         width: max-content;
-        min-width: 300px; /* 最低限の幅 */
+        min-width: 300px;
       }
 
-      /* コンテナ（短歌を並べる場所） */
       .tanka-container {
         display: flex;
-        flex-direction: column; /* 縦書きなのでcolumnが横並びになる */
-        flex-wrap: nowrap; /* 折り返さない（横に伸びていく） */
-        height: 85%;
-        gap: 3.5em; /* 短歌と短歌の間隔 */
-        margin-left: 20px;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        height: 100%;
+        gap: 4em;
       }
 
-      /* タイトル */
       h1 {
-        font-size: 1.2rem;
-        margin-left: 0.3em;
+        font-size: 1.8rem;
+        margin-left: 1em;
         margin-bottom: 0;
       }
 
-      /* 短歌一首 */
       .tanka {
-        font-size: 1rem;
-        line-height: 1.2;
+        font-size: 1.4rem;
+        line-height: 1.8;
         white-space: pre-wrap;
-      }
-
-      /* クレジット（画像化された時に右下に小さく出る） */
-      .footer-credit {
-        font-size: 0.8rem;
-        margin-top: auto; /* 左端（縦書きの下）に寄せる */
-        opacity: 0.6;
-        font-family: sans-serif;
-        writing-mode: horizontal-tb; /* ここだけ横書きにする場合 */
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        display: none; /* 通常時は非表示、必要なら表示 */
       }
     </style>
   </head>
@@ -185,22 +164,32 @@
     </div>
 
     <script>
-      /* --- 1. データ読み込みと表示ロジック --- */
+      /* --- 1. データ読み込み --- */
       const params = new URLSearchParams(window.location.search);
       const targetId = params.get("id");
       const lists = JSON.parse(localStorage.getItem("utayomi_data")) || [];
       const series = lists.find((l) => l.id == targetId);
       const container = document.getElementById("content-container");
 
+      if (!series && !targetId) {
+        // ダミーデータ
+        const dummyTitle = document.createElement("h1");
+        dummyTitle.textContent = "プレビュー見本";
+        container.appendChild(dummyTitle);
+
+        const dummyTanka = document.createElement("div");
+        dummyTanka.className = "tanka";
+        dummyTanka.textContent =
+          "春過ぎて\n夏来にけらし\n白妙の\n衣干すてふ\n天の香具山";
+        container.appendChild(dummyTanka);
+      }
+
       if (series) {
         document.title = series.title + " - プレビュー";
-
-        // タイトル
         const titleEl = document.createElement("h1");
         titleEl.textContent = series.title;
         container.appendChild(titleEl);
 
-        // 短歌
         series.items.forEach((item) => {
           if (!item.text.trim()) return;
           const p = document.createElement("div");
@@ -212,54 +201,56 @@
         container.innerHTML = "<p>データが見つかりませんでした。</p>";
       }
 
-      /* --- 2. 設定変更のロジック --- */
+      /* --- 2. 設定変更 --- */
       const root = document.documentElement;
-      const fontSelect = document.getElementById("font-select");
-      const bgColorInput = document.getElementById("bg-color");
-      const textColorInput = document.getElementById("text-color");
+      document
+        .getElementById("font-select")
+        .addEventListener("change", (e) =>
+          root.style.setProperty("--main-font", e.target.value),
+        );
+      document
+        .getElementById("bg-color")
+        .addEventListener("input", (e) =>
+          root.style.setProperty("--bg-color", e.target.value),
+        );
+      document
+        .getElementById("text-color")
+        .addEventListener("input", (e) =>
+          root.style.setProperty("--text-color", e.target.value),
+        );
 
-      // フォント変更
-      fontSelect.addEventListener("change", (e) => {
-        root.style.setProperty("--main-font", e.target.value);
-      });
+      /* --- 3. 画像ダウンロード (html-to-image版) --- */
+      document
+        .getElementById("download-btn")
+        .addEventListener("click", async () => {
+          const target = document.getElementById("capture-target");
+          const downloadBtn = document.getElementById("download-btn");
 
-      // 背景色変更
-      bgColorInput.addEventListener("input", (e) => {
-        root.style.setProperty("--bg-color", e.target.value);
-      });
+          downloadBtn.textContent = "生成中...";
+          downloadBtn.disabled = true;
 
-      // 文字色変更
-      textColorInput.addEventListener("input", (e) => {
-        root.style.setProperty("--text-color", e.target.value);
-      });
+          try {
+            // フォントの読み込み完了を待つ（これが原因で止まることがあるため念のため）
+            await document.fonts.ready;
 
-      /* --- 3. 画像ダウンロードのロジック --- */
-      document.getElementById("download-btn").addEventListener("click", () => {
-        const target = document.getElementById("capture-target");
+            // html-to-image で画像生成
+            // pixelRatio: 2 で高解像度化（Retina対応）
+            const dataUrl = await htmlToImage.toPng(target, { pixelRatio: 2 });
 
-        // html2canvasの設定
-        // 縦書き(vertical-rl)はブラウザやライブラリによって座標計算がズレやすいため
-        // windowWidthなどを明示するときれいに撮れることが多い
-        html2canvas(target, {
-          scale: 2, // 高解像度で取得（Retina対応）
-          backgroundColor: null, // CSSの背景色を優先
-          logging: false,
-          allowTaint: true,
-          useCORS: true,
-        })
-          .then((canvas) => {
-            // 画像として保存させるリンクを作成
             const link = document.createElement("a");
             link.download =
               (series ? series.title : "utayomi_preview") + ".png";
-            link.href = canvas.toDataURL("image/png");
+            link.href = dataUrl;
             link.click();
-          })
-          .catch((err) => {
-            console.error("画像生成エラー:", err);
-            alert("画像の生成に失敗しました。");
-          });
-      });
+          } catch (error) {
+            console.error("画像生成エラー:", error);
+            alert("画像の生成に失敗しました。\n" + error.message);
+          } finally {
+            // 成功しても失敗してもボタンを元に戻す
+            downloadBtn.textContent = "画像をダウンロード";
+            downloadBtn.disabled = false;
+          }
+        });
     </script>
   </body>
 </html>
