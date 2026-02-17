@@ -4,100 +4,262 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>プレビュー - Utayomi</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Shippori+Mincho&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Shippori+Mincho&family=Noto+Sans+JP&family=Yuji+Syuku&family=Zen+Kurenaido&display=swap"
       rel="stylesheet"
     />
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
+      :root {
+        /* デフォルト設定（CSS変数で管理） */
+        --bg-color: #fcfcfc;
+        --text-color: #333333;
+        --main-font: "Shippori Mincho", serif;
+      }
+
       body {
+        background-color: #e0e0e0; /* アプリ背景色（プレビュー領域と区別するため少し暗く） */
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden; /* 全体のスクロールは禁止し、プレビューエリアのみスクロールさせる */
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ツールバー（設定エリア） */
+      .toolbar {
+        background: #fff;
+        padding: 10px 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        flex-wrap: wrap;
+        z-index: 100;
+      }
+
+      .toolbar-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+      }
+
+      .toolbar label {
+        font-weight: bold;
+        color: #555;
+      }
+
+      select,
+      input[type="color"] {
+        cursor: pointer;
+        padding: 4px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button.download-btn {
+        margin-left: auto; /* 右寄せ */
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+      }
+      button.download-btn:hover {
+        background-color: #555;
+      }
+
+      /* プレビュー表示エリアのラッパー */
+      .preview-wrapper {
+        flex: 1;
+        overflow: auto; /* ここでスクロールさせる */
+        display: flex;
+        justify-content: center; /* 中央配置 */
+        align-items: center;
+        padding: 40px;
+      }
+
+      /* 実際に画像化される紙のエリア */
+      #capture-target {
+        /* CSS変数を使用 */
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-family: var(--main-font);
+
         /* 縦書き設定 */
         writing-mode: vertical-rl;
-        font-family: "Shippori Mincho", serif; /* 明朝体 */
-        background-color: #fcfcfc; /* 紙っぽい白 */
-        color: #333;
-        margin: 0;
-        padding: 40px;
-        height: 100vh; /* 画面いっぱいの高さ */
+
+        /* サイズと余白 */
+        height: 80vh; /* 画面の高さの80%を基準にする */
+        padding: 3rem; /* 紙の余白 */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* 浮き上がり効果 */
         box-sizing: border-box;
-        overflow-x: auto; /* 横スクロールを許可 */
+
+        /* 横幅は中身（短歌の数）に応じて自動で伸びる */
+        width: max-content;
+        min-width: 300px; /* 最低限の幅 */
       }
 
-      /* 全体を包むコンテナ */
-      .container {
+      /* コンテナ（短歌を並べる場所） */
+      .tanka-container {
         display: flex;
         flex-direction: column; /* 縦書きなのでcolumnが横並びになる */
-        flex-wrap: wrap;
-        height: 90%;
-        align-content: flex-start; /* 右寄せ（縦書きの開始位置） */
-        gap: 4em; /* 短歌と短歌の間隔 */
+        flex-wrap: nowrap; /* 折り返さない（横に伸びていく） */
+        height: 85%;
+        gap: 3.5em; /* 短歌と短歌の間隔 */
+        margin-left: 20px;
       }
 
-      /* タイトルのスタイル */
+      /* タイトル */
       h1 {
-        font-size: 1.8rem;
-        margin-left: 2em; /* タイトルと本文の間の余白 */
-        padding-bottom: 10px;
+        font-size: 1.2rem;
+        margin-left: 0.3em;
+        margin-bottom: 0;
       }
 
-      /* 短歌一首ごとのスタイル */
+      /* 短歌一首 */
       .tanka {
-        font-size: 1.4rem;
-        line-height: 1.8; /* 行間 */
-        white-space: pre-wrap; /* 改行をそのまま反映 */
-        display: inline-block;
+        font-size: 1rem;
+        line-height: 1.2;
+        white-space: pre-wrap;
       }
 
-      /* 印刷時の設定（ボタンなどを消すならここで調整） */
-      @media print {
-        body {
-          padding: 0;
-        }
+      /* クレジット（画像化された時に右下に小さく出る） */
+      .footer-credit {
+        font-size: 0.8rem;
+        margin-top: auto; /* 左端（縦書きの下）に寄せる */
+        opacity: 0.6;
+        font-family: sans-serif;
+        writing-mode: horizontal-tb; /* ここだけ横書きにする場合 */
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        display: none; /* 通常時は非表示、必要なら表示 */
       }
     </style>
   </head>
   <body>
-    <div class="container" id="preview-container"></div>
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <label for="font-select">フォント</label>
+        <select id="font-select">
+          <option value="'Shippori Mincho', serif">しっぽり明朝 (明朝)</option>
+          <option value="'Noto Sans JP', sans-serif">
+            Noto Sans (ゴシック)
+          </option>
+          <option value="'Yuji Syuku', serif">佑字 宿 (筆文字)</option>
+          <option value="'Zen Kurenaido', sans-serif">
+            Zen 紅道 (手書き風)
+          </option>
+        </select>
+      </div>
+
+      <div class="toolbar-group">
+        <label for="bg-color">背景色</label>
+        <input type="color" id="bg-color" value="#fcfcfc" />
+      </div>
+
+      <div class="toolbar-group">
+        <label for="text-color">文字色</label>
+        <input type="color" id="text-color" value="#333333" />
+      </div>
+
+      <button id="download-btn" class="download-btn">画像をダウンロード</button>
+    </div>
+
+    <div class="preview-wrapper">
+      <div id="capture-target">
+        <div class="tanka-container" id="content-container"></div>
+      </div>
+    </div>
 
     <script>
-      // 1. URLからIDを取得する
+      /* --- 1. データ読み込みと表示ロジック --- */
       const params = new URLSearchParams(window.location.search);
       const targetId = params.get("id");
-
-      // 2. LocalStorageからデータを読み込む
-      // (script.jsと同じキー "utayomi_data" を見に行きます)
       const lists = JSON.parse(localStorage.getItem("utayomi_data")) || [];
-
-      // 3. IDが一致する作品を探す
-      // targetIdは文字列、l.idは数値の可能性があるので "==" で比較
       const series = lists.find((l) => l.id == targetId);
-
-      const container = document.getElementById("preview-container");
+      const container = document.getElementById("content-container");
 
       if (series) {
-        // タイトルを表示
-        document.title = series.title; // ブラウザのタブ名
+        document.title = series.title + " - プレビュー";
 
-        // 画面にタイトルを追加
+        // タイトル
         const titleEl = document.createElement("h1");
         titleEl.textContent = series.title;
         container.appendChild(titleEl);
 
-        // 短歌を一首ずつ追加
+        // 短歌
         series.items.forEach((item) => {
-          // 空の短歌はスキップ
           if (!item.text.trim()) return;
-
           const p = document.createElement("div");
           p.className = "tanka";
           p.textContent = item.text;
           container.appendChild(p);
         });
-      } else {
+      } else if (targetId) {
         container.innerHTML = "<p>データが見つかりませんでした。</p>";
       }
+
+      /* --- 2. 設定変更のロジック --- */
+      const root = document.documentElement;
+      const fontSelect = document.getElementById("font-select");
+      const bgColorInput = document.getElementById("bg-color");
+      const textColorInput = document.getElementById("text-color");
+
+      // フォント変更
+      fontSelect.addEventListener("change", (e) => {
+        root.style.setProperty("--main-font", e.target.value);
+      });
+
+      // 背景色変更
+      bgColorInput.addEventListener("input", (e) => {
+        root.style.setProperty("--bg-color", e.target.value);
+      });
+
+      // 文字色変更
+      textColorInput.addEventListener("input", (e) => {
+        root.style.setProperty("--text-color", e.target.value);
+      });
+
+      /* --- 3. 画像ダウンロードのロジック --- */
+      document.getElementById("download-btn").addEventListener("click", () => {
+        const target = document.getElementById("capture-target");
+
+        // html2canvasの設定
+        // 縦書き(vertical-rl)はブラウザやライブラリによって座標計算がズレやすいため
+        // windowWidthなどを明示するときれいに撮れることが多い
+        html2canvas(target, {
+          scale: 2, // 高解像度で取得（Retina対応）
+          backgroundColor: null, // CSSの背景色を優先
+          logging: false,
+          allowTaint: true,
+          useCORS: true,
+        })
+          .then((canvas) => {
+            // 画像として保存させるリンクを作成
+            const link = document.createElement("a");
+            link.download =
+              (series ? series.title : "utayomi_preview") + ".png";
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+          })
+          .catch((err) => {
+            console.error("画像生成エラー:", err);
+            alert("画像の生成に失敗しました。");
+          });
+      });
     </script>
   </body>
 </html>
