@@ -480,8 +480,6 @@ button:disabled {
   font-size: 130%;
   padding-left: 7px;
   padding-right: 7px;
-  padding-top: 7px;
-  padding-bottom: 7px;
   border-radius: 50px;
   background-color: var(--bg);
 }
