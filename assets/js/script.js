@@ -457,3 +457,23 @@ function importData() {
 
 // ボタンにイベントを登録
 document.getElementById("importBtn").addEventListener("click", importData);
+
+const fileInput = document.getElementById("importFile");
+const fileName = document.getElementById("file-name");
+const submitBtn = document.getElementById("importBtn");
+
+fileInput.addEventListener("change", (e) => {
+  const files = e.target.files;
+
+  if (files.length > 0) {
+    // ファイルが選択された場合
+    fileName.textContent = `選択済み: ${files[0].name}`;
+    submitBtn.disabled = false; // ボタンを有効化
+    submitBtn.classList.add("active"); // 見た目を変える用のクラス
+  } else {
+    // キャンセルなどで選択されなかった場合
+    fileName.textContent = "選択されていません";
+    submitBtn.disabled = true;
+    submitBtn.classList.remove("active");
+  }
+});

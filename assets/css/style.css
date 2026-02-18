@@ -546,7 +546,9 @@ button:disabled {
 }
 
 #exportBtn,
-#importBtn {
+#importBtn.active,
+.upload-label,
+#importBtn.active {
   color: var(--primary);
   border: solid 1px var(--border);
   background-color: var(--bg);
@@ -555,14 +557,41 @@ button:disabled {
   margin-left: 5px;
 }
 
+/* 初期状態（クリック不可）　*/
+#importBtn {
+  background-color: var(--bg);
+  color: var(--border);
+  cursor: pointer;
+  opacity: 1;
+  border-radius: 5px;
+  padding: 5px;
+  margin-left: 5px;
+  border: solid 1px var(--border);
+}
+
+.upload-label {
+  font-family: sans-serif;
+  font-size: 14px;
+  padding: 9px;
+}
+
 #exportBtn:hover,
-#importBtn:hover {
+#importBtn.active:hover,
+.upload-label:hover {
   background-color: var(--border);
 }
 
-/* #importFile {
+/* inputは隠す */
+.upload-label input {
   display: none;
-} */
+}
+
+#file-name {
+  font-family: sans-serif;
+  font-size: 13px;
+  color: var(--primary);
+  margin-left: 5px;
+}
 
 /* レスポンシブ対応（スマホ） */
 @media (max-width: 768px) {
