@@ -370,5 +370,5 @@ function openPreview() {
   saveData();
   // 新しいウィンドウ（preview.html）を開き、URLの後ろにIDをつける
   // 例: preview.html?id=1708055555555
-  window.open(`preview.html?id=${activeSeriesId}`, "_blank");
+  window.open(`pases/preview.html?id=${activeSeriesId}`, "_blank");
 }
