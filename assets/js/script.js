@@ -392,7 +392,7 @@ function exportData() {
   // LocalStorageからデータを取得
   const data = localStorage.getItem("utayomi_data");
 
-  if (data === "[]") {
+  if (data === "[]" || !data) {
     alert("保存されているデータが見つかりません。");
     return;
   }
@@ -418,3 +418,42 @@ function exportData() {
 
 // ボタンにイベントを登録
 document.getElementById("exportBtn").addEventListener("click", exportData);
+
+function importData() {
+  const fileInput = document.getElementById("importFile");
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("インポートするファイルを選択してください。");
+    return;
+  }
+
+  // ユーザーへの最終確認
+  const isConfirmed = confirm("現在のデータが上書きされます。よろしいですか？");
+  if (!isConfirmed) return;
+
+  const reader = new FileReader();
+
+  // ファイルの読み込みが完了した時の処理
+  reader.onload = function (e) {
+    const content = e.target.result; // ファイルの中身（テキスト）
+
+    try {
+      // LocalStorageに保存（エクスポート時と同じキー名を使う）
+      localStorage.setItem("utayomi_data", content);
+
+      alert("データのインポートが完了しました！");
+
+      // 画面をリロードして最新のデータを表示させる
+      location.reload();
+    } catch (error) {
+      alert("エラーが発生しました: " + error.message);
+    }
+  };
+
+  // ファイルをテキストとして読み込む
+  reader.readAsText(file);
+}
+
+// ボタンにイベントを登録
+document.getElementById("importBtn").addEventListener("click", importData);

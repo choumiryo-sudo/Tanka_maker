@@ -27,7 +27,9 @@
     <header>
       <h1>短歌ノートWeb</h1>
       <div class="header-right">
-        <button id="exportBtn">データエクスポート</button>
+        <button id="exportBtn">↑ データエクスポート</button>
+        <input type="file" id="importFile" accept=".txt" />
+        <button id="importBtn">↓ データインポート</button>
         <input type="checkbox" id="popup" />
         <label class="popup-open" for="popup">？</label>
       </div>
@@ -68,6 +70,7 @@
               ※大体三 ~
               十五首程度を想定しています。また、文字数（≠音数）が三十四文字を超えると改行されます。
             </p>
+            <h5 class="explanation-h5">データエクスポート</h5>
           </div>
           <label class="popup-close" for="popup">
             <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">

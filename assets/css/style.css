@@ -545,17 +545,24 @@ button:disabled {
   font-size: 15px;
 }
 
-#exportBtn {
+#exportBtn,
+#importBtn {
   color: var(--primary);
   border: solid 1px var(--border);
   background-color: var(--bg);
   border-radius: 5px;
   padding: 5px;
+  margin-left: 5px;
 }
 
-#exportBtn:hover {
+#exportBtn:hover,
+#importBtn:hover {
   background-color: var(--border);
 }
+
+/* #importFile {
+  display: none;
+} */
 
 /* レスポンシブ対応（スマホ） */
 @media (max-width: 768px) {
