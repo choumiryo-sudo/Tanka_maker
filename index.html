@@ -27,13 +27,17 @@
     <header>
       <h1>短歌ノートWeb</h1>
       <div class="header-right">
-        <button id="exportBtn">↑ エクスポート</button>
-        <label class="upload-label">
-          ファイルを選択
-          <input type="file" id="importFile" accept=".txt" />
-        </label>
-        <span id="file-name">選択されていません</span>
-        <button id="importBtn">↓ インポート</button>
+        <div class="line-right">
+          <button id="exportBtn">↑ エクスポート</button>
+        </div>
+        <div class="line-right">
+          <label class="upload-label">
+            ファイルを選択
+            <input type="file" id="importFile" accept=".txt" />
+          </label>
+          <span id="file-name">選択されていません</span>
+          <button id="importBtn">↓ インポート</button>
+        </div>
       </div>
       <input type="checkbox" id="popup" />
       <label class="popup-open" for="popup">？</label>

@@ -591,6 +591,13 @@ button:disabled {
   margin-left: 5px;
 }
 
+.line-right {
+  display: inline;
+  border-right: 1px solid var(--border);
+  padding-right: 10px;
+  margin-right: 10px;
+}
+
 /* レスポンシブ対応（スマホ） */
 @media (max-width: 768px) {
   body {
