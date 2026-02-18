@@ -26,7 +26,6 @@ header {
   border-bottom: solid 1px var(--border);
   display: flex; /* タイトルとヘルプボタンを横並びに */
   align-items: center; /* 垂直方向の真ん中寄せ */
-  justify-content: space-between; /* 両端に寄せる */
 }
 
 h1 {
@@ -37,6 +36,11 @@ h1 {
   padding-top: 20px;
   padding-bottom: 20px;
   font-family: sans-serif;
+  justify-content: start;
+}
+
+.header-right {
+  margin: 0 0 0 auto;
 }
 
 /* レイアウト枠 */
@@ -471,10 +475,13 @@ button:disabled {
   cursor: pointer; /* マウスオーバーでカーソルの形状を変えることで、クリックできる要素だとわかりやすいように */
   border: solid 1px var(--border);
   margin-right: 30px;
+  margin-left: 20px;
   font-family: sans-serif;
   font-size: 130%;
   padding-left: 7px;
   padding-right: 7px;
+  padding-top: 7px;
+  padding-bottom: 7px;
   border-radius: 50px;
   background-color: var(--bg);
 }
@@ -536,6 +543,18 @@ button:disabled {
 
 .explanation {
   font-size: 15px;
+}
+
+#exportBtn {
+  color: var(--primary);
+  border: solid 1px var(--border);
+  background-color: var(--bg);
+  border-radius: 5px;
+  padding: 5px;
+}
+
+#exportBtn:hover {
+  background-color: var(--border);
 }
 
 /* レスポンシブ対応（スマホ） */

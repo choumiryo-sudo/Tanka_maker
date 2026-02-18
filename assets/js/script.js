@@ -373,3 +373,48 @@ function openPreview() {
   // 例: preview.html?id=1708055555555
   window.open(`pages/preview.html?id=${activeSeriesId}`, "_blank");
 }
+
+// 日時を「YYYYMMDD_HHMMSS」形式で取得する関数
+function getFormattedTimestamp() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  const h = String(now.getHours()).padStart(2, "0");
+  const min = String(now.getMinutes()).padStart(2, "0");
+  const s = String(now.getSeconds()).padStart(2, "0");
+
+  return `${y}${m}${d}_${h}${min}${s}`;
+}
+
+// エクスポート処理
+function exportData() {
+  // LocalStorageからデータを取得
+  const data = localStorage.getItem("utayomi_data");
+
+  if (data === "[]") {
+    alert("保存されているデータが見つかりません。");
+    return;
+  }
+
+  // ファイル名の生成
+  const fileName = `${getFormattedTimestamp()}_tankanoteweb.txt`;
+
+  // Blobの作成とダウンロード処理
+  const blob = new Blob([data], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName; // ここで動的なファイル名を指定
+
+  document.body.appendChild(a);
+  a.click();
+
+  // 後処理
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ボタンにイベントを登録
+document.getElementById("exportBtn").addEventListener("click", exportData);
