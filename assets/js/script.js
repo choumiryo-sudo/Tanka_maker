@@ -155,6 +155,7 @@ function renderActiveSeries() {
       const movedItem = series.items.splice(evt.oldIndex, 1)[0];
       series.items.splice(evt.newIndex, 0, movedItem);
       saveData();
+      renderActiveSeries();
     },
   });
 }
