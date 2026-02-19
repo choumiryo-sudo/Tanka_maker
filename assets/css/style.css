@@ -602,6 +602,14 @@ button:disabled {
 
 /* レスポンシブ対応（スマホ） */
 @media (max-width: 768px) {
+  header {
+    display: none;
+  }
+
+  .preview-btn {
+    display: none;
+  }
+
   body {
     height: auto;
     overflow: auto;
