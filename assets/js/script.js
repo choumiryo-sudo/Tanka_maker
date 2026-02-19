@@ -537,3 +537,42 @@ fileInput.addEventListener("change", (e) => {
     submitBtn.classList.remove("active");
   }
 });
+
+// --- テーマ切替（ダーク/ライト） ---
+function applyTheme(theme) {
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+    const toggle = document.getElementById("themeToggle");
+    if (toggle) toggle.checked = true;
+  } else if (theme === "light") {
+    document.body.classList.remove("dark");
+    const toggle = document.getElementById("themeToggle");
+    if (toggle) toggle.checked = false;
+  }
+}
+
+function initThemeToggle() {
+  const toggle = document.getElementById("themeToggle");
+  // 保存された設定を取得。なければシステム設定を優先
+  const saved = localStorage.getItem("tankanote_theme");
+  if (saved) {
+    applyTheme(saved);
+  } else if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    applyTheme("dark");
+  } else {
+    applyTheme("light");
+  }
+
+  if (!toggle) return;
+  toggle.addEventListener("change", function () {
+    const newTheme = this.checked ? "dark" : "light";
+    applyTheme(newTheme);
+    localStorage.setItem("tankanote_theme", newTheme);
+  });
+}
+
+// 初期化呼び出し
+initThemeToggle();
