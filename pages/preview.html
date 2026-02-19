@@ -160,6 +160,29 @@
         line-height: 1.8;
         white-space: pre-wrap;
       }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #2d3748;
+        }
+        .toolbar {
+          background-color: #1a202c;
+          box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+        .toolbar label {
+          color: #ddd;
+        }
+
+        input,
+        select {
+          background-color: #1a202c;
+          color: #ddd;
+          border: 1px solid #555;
+        }
+        #username-input {
+          border: solid 0.5px #555;
+        }
+      }
     </style>
   </head>
   <body>

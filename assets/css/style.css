@@ -602,6 +602,120 @@ button:disabled {
   margin-right: 10px;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 背景とベースカラー */
+    --bg: #1a202c; /* 深いネイビーグレー */
+    --card-bg: #2d3748; /* カードは背景より少し明るく */
+    --border: #4a5568; /* 境界線は控えめに */
+
+    /* テキスト */
+    --text: #edf2f7; /* ほぼ白に近いグレー（純白より目が疲れない） */
+    --sub-text: #a0aec0; /* 補助テキスト */
+
+    /* ブランドカラー */
+    --primary: #a0aec0; /* ライトモードのprimaryより明度を上げたもの */
+    --primary-dark: #cbd5e0; /* アクセントとしてより明るい色に */
+    --accent: #9b3333; /* 赤系も少し彩度を落とし、視認性を上げた明るい色に */
+    --sidebar-width: 280px;
+  }
+
+  .sidebar {
+    background: var(--card-bg);
+  }
+
+  .sidebar-header {
+    background: var(--bg);
+  }
+
+  .sidebar-item:hover {
+    background: var(--bg);
+  }
+
+  .sidebar-item.active {
+    background: #505d71;
+  }
+  #loading-overlay {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .sidebar-item .item-date {
+    color: var(--sub-text);
+  }
+
+  .sidebar-empty {
+    color: var(--sub-text);
+  }
+
+  button.primary-btn {
+    background-color: var(--primary);
+    color: var(--bg);
+  }
+  .series-title-input:focus {
+    background: #505d71;
+  }
+  .tanka-item {
+    background: var(--bg);
+  }
+  .tanka-content {
+    color: var(--text);
+  }
+  .meta-info {
+    border-top: 1px dotted var(--border);
+  }
+
+  .reading-label {
+    color: #a0aec0;
+  }
+
+  .reading-input:focus {
+    background: #505d71;
+  }
+
+  .count-badge {
+    background: #505d71;
+    color: var(--text);
+  }
+  .history-panel {
+    background: #4a5568;
+
+    color: #f7fafc;
+  }
+
+  .history-row {
+    border-bottom: 1px dotted #505d71;
+  }
+  .drag-handle-icon:hover {
+    background-color: #505d71;
+  }
+  .add-item-btn {
+    background-color: var(--bg);
+    border: 2px dashed var(--border);
+    color: var(--primary);
+  }
+
+  .add-item-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background-color: #edf2f7;
+  }
+  .popup-window {
+    background-color: var(--bg);
+  }
+  input[type="text"],
+  textarea {
+    background-color: var(--bg);
+  }
+  button.primary-btn {
+    background-color: #505d71;
+    color: var(--primary);
+  }
+
+  button.primary-btn:hover {
+    background-color: #677891;
+  }
+}
+
 /* レスポンシブ対応（スマホ） */
 @media (max-width: 768px) {
   header {
