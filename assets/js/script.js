@@ -334,7 +334,7 @@ function countMora(text) {
   let clean = text.replace(/[^ぁ-んァ-ンー]/g, "");
   clean = kataToHira(clean);
   if (!clean) return 0;
-  let processed = clean.replace(/[ぁ-ん][ゃゅょ]/g, "*");
+  let processed = clean.replace(/[ぁ-ん][ゃゅょぁぃぅぇぉ]/g, "*");
   return processed.length;
 }
 
