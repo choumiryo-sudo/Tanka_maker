@@ -40,10 +40,10 @@
         <div class="line-right">
           <label class="upload-label">
             ファイルを選択
-            <input type="file" id="importFile" accept=".json,.txt" />
+            <input type="file" id="importFile" accept=".json" />
           </label>
           <span id="file-name">選択されていません</span>
-          <button id="importBtn">↓ インポート</button>
+          <button id="importBtn" disabled>↓ インポート</button>
         </div>
       </div>
       <input type="checkbox" id="popup" />
@@ -135,7 +135,7 @@
               </li>
               <li>「インポート」ボタンをクリック</li>
               <li>
-                「現在のデータが上書きされます。よろしいですか？」とポップアップが表示されるので、許可するなら「OK」をクリック
+                「データを上書きしますか？」とポップアップが表示されるので、許可するなら「OK」をクリック
               </li>
             </ol>
             <p class="explanation">
