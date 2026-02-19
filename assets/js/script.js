@@ -416,8 +416,49 @@ function exportData() {
   URL.revokeObjectURL(url);
 }
 
+// 本文のみを抽出してエクスポート
+function exportTextOnly() {
+  if (!lists || lists.length === 0) {
+    alert("保存されているデータが見つかりません。");
+    return;
+  }
+
+  const texts = [];
+  lists.forEach((series) => {
+    if (series && Array.isArray(series.items)) {
+      series.items.forEach((item) => {
+        if (item && typeof item.text === "string") texts.push(item.text);
+      });
+    }
+  });
+
+  if (texts.length === 0) {
+    alert("エクスポートする本文が見つかりません。");
+    return;
+  }
+
+  const content = texts.join("\n");
+  const fileName = `${getFormattedTimestamp()}_texts.txt`;
+
+  const blob2 = new Blob([content], { type: "text/plain" });
+  const url2 = URL.createObjectURL(blob2);
+
+  const a2 = document.createElement("a");
+  a2.href = url2;
+  a2.download = fileName;
+
+  document.body.appendChild(a2);
+  a2.click();
+
+  document.body.removeChild(a2);
+  URL.revokeObjectURL(url2);
+}
+
 // ボタンにイベントを登録
 document.getElementById("exportBtn").addEventListener("click", exportData);
+document
+  .getElementById("exportTextBtn")
+  .addEventListener("click", exportTextOnly);
 
 function importData() {
   const fileInput = document.getElementById("importFile");

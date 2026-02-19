@@ -544,6 +544,7 @@ button:disabled {
 }
 
 #exportBtn,
+#exportTextBtn,
 #importBtn.active,
 .upload-label,
 #importBtn.active {
@@ -574,6 +575,7 @@ button:disabled {
 }
 
 #exportBtn:hover,
+#exportTextBtn:hover,
 #importBtn.active:hover,
 .upload-label:hover {
   background-color: var(--border);
