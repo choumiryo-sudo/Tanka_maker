@@ -564,9 +564,9 @@ button:disabled {
 
 .popup-close {
   cursor: pointer;
-  position: absolute;
-  top: -28px;
-  right: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 100000;
 }
 
 .explanation-h5 {
