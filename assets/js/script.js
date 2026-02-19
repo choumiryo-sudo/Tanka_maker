@@ -397,11 +397,21 @@ function exportData() {
     return;
   }
 
+  const exportObject = {
+    appName: "tankanoteweb",
+    version: "1.0",
+    lastUpdated: new Date().toISOString(),
+    content: data, // ここに実際のデータが入ります
+  };
+
+  // JSON文字列に変換（インデントをつけて読みやすくする場合は第3引数に2を入れる）
+  const jsonString = JSON.stringify(exportObject, null, 2);
+
   // ファイル名の生成
-  const fileName = `${getFormattedTimestamp()}_tankanoteweb.txt`;
+  const fileName = `${getFormattedTimestamp()}_tankanoteweb.json`;
 
   // Blobの作成とダウンロード処理
-  const blob = new Blob([data], { type: "text/plain" });
+  const blob = new Blob([jsonString], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
@@ -469,10 +479,6 @@ function importData() {
     return;
   }
 
-  // ユーザーへの最終確認
-  const isConfirmed = confirm("現在のデータが上書きされます。よろしいですか？");
-  if (!isConfirmed) return;
-
   const reader = new FileReader();
 
   // ファイルの読み込みが完了した時の処理
@@ -480,15 +486,28 @@ function importData() {
     const content = e.target.result; // ファイルの中身（テキスト）
 
     try {
-      // LocalStorageに保存（エクスポート時と同じキー名を使う）
-      localStorage.setItem("utayomi_data", content);
+      // 1. JSONとして解析できるかチェック
+      const importedData = JSON.parse(e.target.result);
 
-      alert("データのインポートが完了しました！");
+      // 2. データの形式（構造）をチェック
+      // 例えば、このアプリのデータであることを示す「appName」があるか確認する
+      if (importedData.appName !== "tankanoteweb") {
+        throw new Error(
+          "このファイルは短歌ノートWebのバックアップデータではありません。",
+        );
+      }
 
-      // 画面をリロードして最新のデータを表示させる
-      location.reload();
+      // 3. ユーザーに確認してLocalStorageに反映
+      const isConfirmed = confirm("データを上書きしますか？");
+      if (isConfirmed) {
+        localStorage.setItem("utayomi_data", importedData.content);
+        alert("インポートが完了しました。");
+        location.reload();
+      }
     } catch (error) {
-      alert("エラーが発生しました: " + error.message);
+      // JSONの形式が正しくない場合や、独自のチェックに引っかかった場合
+      alert("エラー: " + error.message);
+      console.error("Import failed:", error);
     }
   };
 
