@@ -246,9 +246,9 @@ button:disabled {
 
 .delete-list-btn,
 .preview-btn {
-  background-color: transparent;
-  color: #a0aec0;
-  border: 1px solid #cbd5e0;
+  background-color: var(--bg);
+  color: var(--sub-text);
+  border: 1px solid var(--border);
   padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
@@ -260,8 +260,8 @@ button:disabled {
 
 .delete-list-btn-side {
   background-color: transparent;
-  color: #a0aec0;
-  border: 1px solid #cbd5e0;
+  color: var(--sub-text);
+  border: 1px solid var(--border);
   padding: 5px 10px;
   margin-left: 125px;
   border-radius: 4px;
@@ -278,7 +278,7 @@ button:disabled {
 }
 
 .preview-btn:hover {
-  background-color: var(--bg);
+  background-color: var(--border);
 }
 
 /* 短歌アイテム */
@@ -554,11 +554,12 @@ button:disabled {
   border-radius: 5px;
   padding: 5px;
   margin-left: 5px;
+  transition: all 0.2s;
 }
 
 /* 初期状態（クリック不可）　*/
 #importBtn {
-  background-color: var(--bg);
+  background-color: var(--card-bg);
   color: var(--border);
   cursor: pointer;
   opacity: 1;
@@ -566,6 +567,7 @@ button:disabled {
   padding: 5px;
   margin-left: 5px;
   border: solid 1px var(--border);
+  transition: all 0.2s;
 }
 
 .upload-label {
