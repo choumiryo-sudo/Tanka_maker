@@ -55,6 +55,9 @@
             <p class="explanation">
               短歌（主に連作）を作成・推敲するためのサイトです。
             </p>
+            <p class="explanation">
+              ※PCでの操作を想定しています。スマートフォン・タブレットなどでの使用は非推奨です。
+            </p>
             <h3 class="explanation-h3">できること</h3>
             <h5 class="explanation-h5">基本操作</h5>
             <p class="explanation">
@@ -86,6 +89,52 @@
               十五首程度を想定しています。また、文字数（≠音数）が三十四文字を超えると改行されます。
             </p>
             <h5 class="explanation-h5">データエクスポート</h5>
+            <p class="explanation">
+              「エクスポート」ボタンで、作品をバックアップできます。
+            </p>
+            <dl>
+              <dt>・エクスポート</dt>
+              <dd>
+                ここからダウンロードしたファイルは、「インポート」ボタンから再度インポートできます。ブラウザの履歴やキャッシュを消去する（且つ、その後再度このサイトを使いたい）際のバックアップに使えます。
+              </dd>
+            </dl>
+            <dl>
+              <dt>・本文のみエクスポート</dt>
+              <dd>
+                短歌本文だけのプレーンなテキストです。本文だけのデータで十分な場合はこちらがおすすめです。
+              </dd>
+            </dl>
+            <h5 class="explanation-h5">データインポート</h5>
+            <p class="explanation">
+              ダウンロードしたテキストファイルは、再度インポートできます。
+            </p>
+            <ol>
+              <li>「ファイルを選択」ボタンをクリック</li>
+              <li>
+                PC内からファイルを選択（変更していない場合、デフォルトファイル名は「YYYYMMDD_HHmmss_tankanoteweb.json」）
+              </li>
+              <li>「インポート」ボタンをクリック</li>
+              <li>
+                「現在のデータが上書きされます。よろしいですか？」とポップアップが表示されるので、許可するなら「OK」をクリック
+              </li>
+            </ol>
+            <p class="explanation">
+              ※もし反映されない場合は、サイトのリフレッシュを試行してください。
+            </p>
+            <h5 class="explanation-h5">テーマ切り替え</h5>
+            <p class="explanation">
+              画面左上のトグルボタンから、ライトモード/ダークモードを切り替えられます。
+            </p>
+            <h5 class="explanation-h5">データのセキュリティについて</h5>
+            <p class="explanation">
+              入力内容はご利用のブラウザ（ローカルストレージ）にのみ保存され、外部へ送信されることはありません。
+              ただし、機密情報は入力しないでください。
+            </p>
+            <p class="explanation">
+              ※ブラウザのデータ/キャッシュ/履歴削除により内容が全消去されます。必要に応じてデータをバックアップ（エクスポート）してください。
+            </p>
+            <h5 class="explanation-h5">関連リンク</h5>
+            <p class="explanation">（未定）</p>
           </div>
           <label class="popup-close" for="popup">
             <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">
@@ -94,7 +143,7 @@
                 y1="0"
                 x2="18"
                 y2="18"
-                stroke="white"
+                stroke="gray"
                 stroke-width="3"
               ></line>
               <line
@@ -102,7 +151,7 @@
                 y1="18"
                 x2="18"
                 y2="0"
-                stroke="white"
+                stroke="gray"
                 stroke-width="3"
               ></line>
             </svg>
