@@ -1,0 +1,15 @@
+# 依存ライブラリ（容量が大きく、環境によって異なるため）
+node_modules/
+
+# ビルド成果物（Netlifyが自動生成するので不要）
+dist/
+build/
+.next/
+
+# 環境変数（機密情報が含まれるため）
+.env
+.env.local
+
+# OS特有のキャッシュファイル
+.DS_Store
+Thumbs.db
