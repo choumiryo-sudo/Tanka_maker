@@ -564,6 +564,8 @@ button:disabled {
 }
 
 .popup-close {
+  display: flex;
+  margin-left: 515px;
   cursor: pointer;
   position: sticky;
   top: 0;
