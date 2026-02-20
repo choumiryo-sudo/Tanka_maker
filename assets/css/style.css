@@ -17,8 +17,9 @@ body {
   margin: 0;
   padding: 0;
   line-height: 1.6;
-  height: 100vh;
-  overflow: hidden; /* 全体スクロール禁止（エリア別スクロール） */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 header {
@@ -84,7 +85,8 @@ h1 {
 /* レイアウト枠 */
 .app-container {
   display: flex;
-  height: 100vh;
+  flex: 1;
+  overflow: hidden;
 }
 
 /* サイドバー（タイトル一覧） */
@@ -173,6 +175,30 @@ h1 {
   align-items: center;
   z-index: 9999;
   flex-direction: column;
+}
+
+/* フッター */
+footer {
+  background-color: var(--card-bg);
+  border-top: solid 1px var(--border);
+  padding: 20px 30px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--sub-text);
+  flex-shrink: 0;
+}
+
+footer p {
+  margin: 0;
+}
+
+footer a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }
 
 /* 入力エリア */
