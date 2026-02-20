@@ -34,10 +34,15 @@ function renderApp() {
 // サイドバーの描画
 function renderSidebar() {
   const listEl = document.getElementById("sidebarList");
-  listEl.innerHTML = "";
+  while (listEl.firstChild) {
+    listEl.removeChild(listEl.firstChild);
+  }
 
   if (lists.length === 0) {
-    listEl.innerHTML = '<li class="sidebar-empty">作品がありません</li>';
+    const li = document.createElement("li");
+    li.className = "sidebar-empty";
+    li.textContent = "作品がありません";
+    listEl.appendChild(li);
     return;
   }
 
@@ -49,12 +54,23 @@ function renderSidebar() {
     const date = new Date(series.id);
     const dateStr = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
 
-    li.innerHTML = `
-                <div>${escapeHtml(series.title)}</div>
-                <span class="item-date">${dateStr}
-                <button class="delete-list-btn-side" onclick="deleteCurrentSeries()">削除</button>
-                </span>
-            `;
+    // タイトルを表示するdiv
+    const titleDiv = document.createElement("div");
+    titleDiv.textContent = series.title;
+    li.appendChild(titleDiv);
+
+    // 日付とボタンを表示するspan
+    const dateSpan = document.createElement("span");
+    dateSpan.className = "item-date";
+    dateSpan.textContent = dateStr;
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-list-btn-side";
+    deleteBtn.textContent = "削除";
+    deleteBtn.onclick = deleteCurrentSeries;
+
+    dateSpan.appendChild(deleteBtn);
+    li.appendChild(dateSpan);
 
     li.onclick = () => {
       activeSeriesId = series.id;
@@ -68,17 +84,30 @@ function renderSidebar() {
 // 選択された連作（メインエリア）の描画
 function renderActiveSeries() {
   const container = document.getElementById("activeListContainer");
-  container.innerHTML = "";
+  while (container.firstChild) {
+    container.removeChild(container.firstChild);
+  }
 
   if (!activeSeriesId) {
-    container.innerHTML = `<div class="empty-state">作品がありません。<br>新しい連作を作成してください。</div>`;
+    const emptyDiv = document.createElement("div");
+    emptyDiv.className = "empty-state";
+    const text = document.createTextNode("作品がありません。");
+    const br = document.createElement("br");
+    const text2 = document.createTextNode("新しい連作を作成してください。");
+    emptyDiv.appendChild(text);
+    emptyDiv.appendChild(br);
+    emptyDiv.appendChild(text2);
+    container.appendChild(emptyDiv);
     return;
   }
 
   const series = lists.find((l) => l.id === activeSeriesId);
   if (!series) {
     // IDが見つからない場合（削除後など）
-    container.innerHTML = `<div class="empty-state">選択された作品が見つかりません。</div>`;
+    const emptyDiv = document.createElement("div");
+    emptyDiv.className = "empty-state";
+    emptyDiv.textContent = "選択された作品が見つかりません。";
+    container.appendChild(emptyDiv);
     return;
   }
 
@@ -86,23 +115,51 @@ function renderActiveSeries() {
   const seriesEl = document.createElement("div");
   seriesEl.className = "series-card";
 
-  seriesEl.innerHTML = `
-            <div class="series-header">
-                <input type="text" class="series-title-input" 
-                       value="${escapeHtml(series.title)}" 
-                       onchange="updateSeriesTitle(this.value)"
-                       placeholder="タイトルを入力">
+  // series-header div
+  const headerDiv = document.createElement("div");
+  headerDiv.className = "series-header";
 
-                       <button class="preview-btn" onclick="openPreview()">プレビュー</button>
-                <button class="delete-list-btn" onclick="deleteCurrentSeries()">リスト削除</button>
-            </div>
-            <ul class="tanka-list" id="current-tanka-list"></ul>
-            <button class="add-item-btn" onclick="addEmptyItem()">＋ 新しい短歌を追加</button>
-        `;
+  // title input
+  const titleInput = document.createElement("input");
+  titleInput.type = "text";
+  titleInput.className = "series-title-input";
+  titleInput.value = series.title;
+  titleInput.placeholder = "タイトルを入力";
+  titleInput.onchange = function () {
+    updateSeriesTitle(this.value);
+  };
+  headerDiv.appendChild(titleInput);
+
+  // preview button
+  const previewBtn = document.createElement("button");
+  previewBtn.className = "preview-btn";
+  previewBtn.textContent = "プレビュー";
+  previewBtn.onclick = openPreview;
+  headerDiv.appendChild(previewBtn);
+
+  // delete button
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "delete-list-btn";
+  deleteBtn.textContent = "リスト削除";
+  deleteBtn.onclick = deleteCurrentSeries;
+  headerDiv.appendChild(deleteBtn);
+
+  seriesEl.appendChild(headerDiv);
+
+  // tanka list ul
+  const ulElement = document.createElement("ul");
+  ulElement.className = "tanka-list";
+  ulElement.id = "current-tanka-list";
+  seriesEl.appendChild(ulElement);
+
+  // add item button
+  const addBtn = document.createElement("button");
+  addBtn.className = "add-item-btn";
+  addBtn.textContent = "＋ 新しい短歌を追加";
+  addBtn.onclick = addEmptyItem;
+  seriesEl.appendChild(addBtn);
 
   container.appendChild(seriesEl);
-
-  const ulElement = seriesEl.querySelector("#current-tanka-list");
 
   // 短歌アイテムの生成
   series.items.forEach((item, itemIndex) => {
@@ -110,40 +167,96 @@ function renderActiveSeries() {
     li.className = "tanka-item";
     li.dataset.id = item.id;
 
-    li.innerHTML = `
-                <div class="drag-handle-icon">⋮⋮</div>
-                <button class="delete-item-btn" onclick="deleteItem(${itemIndex})" title="この一首を削除">×</button>
-                
-                <input type="text" class="tanka-content" 
-                       value="${escapeHtml(item.text)}" 
-                       onchange="updateItemText(${itemIndex}, this.value)"
-                       placeholder="短歌を入力">
-                
-                <div class="meta-info">
-                    <span class="reading-label">よみ:</span>
-                    <input type="text" class="reading-input"
-                           value="${escapeHtml(item.reading)}"
-                           onchange="updateItemReading(${itemIndex}, this.value)"
-                           placeholder="読み仮名（ひらがな）">
-                    <span class="count-badge" id="count-${item.id}">${item.count}</span>
-                </div>
+    // drag handle icon
+    const dragHandle = document.createElement("div");
+    dragHandle.className = "drag-handle-icon";
+    dragHandle.textContent = "⋮⋮";
+    li.appendChild(dragHandle);
 
-                <div class="history-section">
-                    <span class="history-btn" onclick="toggleHistory(this)">変更履歴 (${item.history.length})</span>
-                    <div class="history-panel">
-                        ${
-                          item.history.length === 0
-                            ? "履歴はありません"
-                            : item.history
-                                .map(
-                                  (h, i) =>
-                                    `<div class="history-row"><small>${i + 1}:</small> ${escapeHtml(h)}</div>`,
-                                )
-                                .join("")
-                        }
-                    </div>
-                </div>
-            `;
+    // delete button
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-item-btn";
+    deleteBtn.textContent = "×";
+    deleteBtn.title = "この一首を削除";
+    deleteBtn.onclick = function () {
+      deleteItem(itemIndex);
+    };
+    li.appendChild(deleteBtn);
+
+    // tanka content input
+    const contentInput = document.createElement("input");
+    contentInput.type = "text";
+    contentInput.className = "tanka-content";
+    contentInput.value = item.text;
+    contentInput.placeholder = "短歌を入力";
+    contentInput.onchange = function () {
+      updateItemText(itemIndex, this.value);
+    };
+    li.appendChild(contentInput);
+
+    // meta-info div
+    const metaDiv = document.createElement("div");
+    metaDiv.className = "meta-info";
+
+    const readingLabel = document.createElement("span");
+    readingLabel.className = "reading-label";
+    readingLabel.textContent = "よみ:";
+    metaDiv.appendChild(readingLabel);
+
+    const readingInput = document.createElement("input");
+    readingInput.type = "text";
+    readingInput.className = "reading-input";
+    readingInput.value = item.reading;
+    readingInput.placeholder = "読み仮名（ひらがな）";
+    readingInput.onchange = function () {
+      updateItemReading(itemIndex, this.value);
+    };
+    metaDiv.appendChild(readingInput);
+
+    const countBadge = document.createElement("span");
+    countBadge.className = "count-badge";
+    countBadge.id = `count-${item.id}`;
+    countBadge.textContent = item.count;
+    metaDiv.appendChild(countBadge);
+
+    li.appendChild(metaDiv);
+
+    // history-section div
+    const historySection = document.createElement("div");
+    historySection.className = "history-section";
+
+    const historyBtn = document.createElement("span");
+    historyBtn.className = "history-btn";
+    historyBtn.textContent = `変更履歴 (${item.history.length})`;
+    historyBtn.onclick = function () {
+      toggleHistory(this);
+    };
+    historySection.appendChild(historyBtn);
+
+    const historyPanel = document.createElement("div");
+    historyPanel.className = "history-panel";
+
+    if (item.history.length === 0) {
+      historyPanel.textContent = "履歴はありません";
+    } else {
+      item.history.forEach((h, i) => {
+        const historyRow = document.createElement("div");
+        historyRow.className = "history-row";
+
+        const smallNum = document.createElement("small");
+        smallNum.textContent = `${i + 1}:`;
+        historyRow.appendChild(smallNum);
+
+        const historyText = document.createTextNode(` ${h}`);
+        historyRow.appendChild(historyText);
+
+        historyPanel.appendChild(historyRow);
+      });
+    }
+
+    historySection.appendChild(historyPanel);
+    li.appendChild(historySection);
+
     ulElement.appendChild(li);
   });
 
