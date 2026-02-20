@@ -34,10 +34,19 @@
         --bg-color: #fcfcfc;
         --text-color: #333333;
         --main-font: "Shippori Mincho", serif;
+        --primary: #4a5568;
+        --primary-dark: #2d3748;
+        --accent: #e53e3e;
+        --bg: #f0f4f8;
+        --card-bg: #ffffff;
+        --border: #e2e8f0;
+        --text: #2d3748;
+        --sub-text: #718096;
+        --sidebar-width: 280px;
       }
 
       body {
-        background-color: #edf1f2;
+        background-color: var(--bg);
         padding: 0;
         height: 100vh;
         overflow: hidden;
@@ -47,7 +56,7 @@
       }
 
       .toolbar {
-        background: #fff;
+        background: var(--card-bg);
         padding: 23px 30px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         display: flex;
@@ -69,21 +78,21 @@
 
       .toolbar label {
         font-weight: bold;
-        color: #555;
+        color: var(--text);
       }
 
       select,
       input[type="color"] {
         cursor: pointer;
         padding: 4px;
-        border: 1px solid #ccc;
+        border: 1px solid var(--border);
         border-radius: 4px;
       }
 
       button.download-btn {
         margin-left: auto;
-        background-color: #4a5568;
-        color: #fff;
+        background-color: var(--primary);
+        color: var(--card-bg);
         border: none;
         padding: 8px 16px;
         border-radius: 4px;
@@ -92,7 +101,7 @@
         transition: background 0.2s;
       }
       button.download-btn:hover {
-        background-color: #2d3748;
+        background-color: var(--primary-dark);
       }
       /* ボタンが無効化されている時のスタイル */
       button.download-btn:disabled {
@@ -135,7 +144,7 @@
       }
 
       #username-input {
-        border: solid 1.5px #e2e8f0;
+        border: solid 1.5px var(--border);
         padding: 8px;
         border-radius: 5px;
       }
@@ -183,6 +192,17 @@
           border: solid 0.5px #555;
         }
       } */
+
+      body.dark {
+        --bg: #1a202c;
+        --card-bg: #2d3748;
+        --border: #4a5568;
+        --text: #edf2f7;
+        --sub-text: #a0aec0;
+        --primary: #a0aec0;
+        --primary-dark: #cbd5e0;
+        --accent: #9b3333;
+      }
     </style>
   </head>
   <body>
@@ -320,6 +340,44 @@
         // 3. 入力された値を表示用の要素に代入する
         outputElement.textContent = inputElement.value;
       });
+
+      function applyTheme(theme) {
+        if (theme === "dark") {
+          document.body.classList.add("dark");
+          const toggle = document.getElementById("themeToggle");
+          if (toggle) toggle.checked = true;
+        } else if (theme === "light") {
+          document.body.classList.remove("dark");
+          const toggle = document.getElementById("themeToggle");
+          if (toggle) toggle.checked = false;
+        }
+      }
+
+      function initThemeToggle() {
+        const toggle = document.getElementById("themeToggle");
+        // 保存された設定を取得。なければシステム設定を優先
+        const saved = localStorage.getItem("tankanote_theme");
+        if (saved) {
+          applyTheme(saved);
+        } else if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+        ) {
+          applyTheme("dark");
+        } else {
+          applyTheme("light");
+        }
+
+        if (!toggle) return;
+        toggle.addEventListener("change", function () {
+          const newTheme = this.checked ? "dark" : "light";
+          applyTheme(newTheme);
+          localStorage.setItem("tankanote_theme", newTheme);
+        });
+      }
+
+      // 初期化呼び出し
+      initThemeToggle();
     </script>
   </body>
 </html>
