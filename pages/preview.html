@@ -301,11 +301,6 @@
           );
         }
 
-        // マークアップがない場合は、元のテキストのみ
-        if (lastIndex === 0) {
-          container.appendChild(document.createTextNode(text));
-        }
-
         return container;
       }
 
