@@ -17,6 +17,7 @@ kuromoji.builder({ dicPath: DIC_URL }).build(function (err, _tokenizer) {
     alert(
       "辞書の読み込みに失敗しました。インターネット接続を確認してください。",
     );
+    document.getElementById("loading-overlay").style.display = "none"; // エラー時も隠す
     return;
   }
   tokenizer = _tokenizer;
@@ -668,16 +669,44 @@ function importData() {
       const importedData = JSON.parse(e.target.result);
 
       // 2. データの形式（構造）をチェック
-      // 例えば、このアプリのデータであることを示す「appName」があるか確認する
       if (importedData.appName !== "tankanoteweb") {
         throw new Error(
           "このファイルは短歌ノートWebのバックアップデータではありません。",
         );
       }
 
+      if (!importedData.content) {
+        throw new Error("データ本体（content）が含まれていません。");
+      }
+
+      // ★追加：contentの中身が正しい形式か検証する
+      let parsedContent;
+      try {
+        parsedContent = JSON.parse(importedData.content);
+      } catch (e) {
+        throw new Error("データ本体が正しいJSON形式ではありません。");
+      }
+
+      if (!Array.isArray(parsedContent)) {
+        throw new Error("データ本体の形式が不正です（配列ではありません）。");
+      }
+
+      // 簡易的なプロパティチェック（最初の要素があれば、idとtitleを持っているか確認）
+      if (parsedContent.length > 0) {
+        const firstItem = parsedContent[0];
+        if (
+          !firstItem.hasOwnProperty("id") ||
+          !firstItem.hasOwnProperty("title") ||
+          !Array.isArray(firstItem.items)
+        ) {
+          throw new Error("データ構造がアプリの仕様と一致しません。");
+        }
+      }
+
       // 3. ユーザーに確認してLocalStorageに反映
       const isConfirmed = confirm("データを上書きしますか？");
       if (isConfirmed) {
+        // 検証済みの正しいデータを保存
         localStorage.setItem("utayomi_data", importedData.content);
         alert("インポートが完了しました。");
         location.reload();
