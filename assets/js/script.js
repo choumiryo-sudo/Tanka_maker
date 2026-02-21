@@ -420,21 +420,86 @@ function updateItemReading(itemIndex, newReading) {
   saveData();
 }
 
-// --- ユーティリティ ---
+// --- ルビマークアップ処理 ---
 
+/**
+ * ルビマークアップ文字列を解析する
+ * 形式: |対象の文字《ルビ》
+ * 戻り値: [{type: 'text', value: '...'}, {type: 'ruby', base: '...', ruby: '...'}] の配列
+ */
+function parseRubyMarkup(text) {
+  const result = [];
+  const rubyRegex = /\|([^《]*?)《([^》]*?)》/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = rubyRegex.exec(text)) !== null) {
+    // ルビ前のテキスト
+    if (match.index > lastIndex) {
+      result.push({
+        type: "text",
+        value: text.substring(lastIndex, match.index),
+      });
+    }
+    // ルビ
+    result.push({
+      type: "ruby",
+      base: match[1],
+      ruby: match[2],
+      fullMarkup: match[0], // 元のマークアップ
+    });
+    lastIndex = rubyRegex.lastIndex;
+  }
+
+  // 最後のテキスト
+  if (lastIndex < text.length) {
+    result.push({
+      type: "text",
+      value: text.substring(lastIndex),
+    });
+  }
+
+  // マークアップがない場合は、元のテキストを返す
+  if (result.length === 0) {
+    return [{ type: "text", value: text }];
+  }
+
+  return result;
+}
+
+/**
+ * ルビマークアップを含むテキストから読み仮名を抽出する
+ * ルビは直接使用、その他は形態素解析
+ */
 function getReadingFromText(text) {
-  if (!tokenizer) return text;
-  const tokens = tokenizer.tokenize(text);
+  const parsed = parseRubyMarkup(text);
   let reading = "";
-  tokens.forEach((token) => {
-    if (token.reading) {
-      reading += token.reading;
+
+  parsed.forEach((part) => {
+    if (part.type === "ruby") {
+      // ルビを直接使用（既に平仮名と仮定）
+      reading += part.ruby;
     } else {
-      reading += token.surface_form;
+      // テキスト部分を形態素解析
+      if (!tokenizer) {
+        reading += part.value;
+      } else {
+        const tokens = tokenizer.tokenize(part.value);
+        tokens.forEach((token) => {
+          if (token.reading) {
+            reading += token.reading;
+          } else {
+            reading += token.surface_form;
+          }
+        });
+      }
     }
   });
+
   return kataToHira(reading);
 }
+
+// --- ユーティリティ ---
 
 function kataToHira(str) {
   return str.replace(/[\u30a1-\u30f6]/g, function (match) {

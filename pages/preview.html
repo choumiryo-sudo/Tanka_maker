@@ -170,6 +170,15 @@
         white-space: pre-wrap;
       }
 
+      ruby {
+        display: ruby;
+      }
+
+      rt {
+        font-size: 0.55em;
+        line-height: 1;
+      }
+
       /* @media (prefers-color-scheme: dark) {
         body {
           background: #2d3748;
@@ -256,6 +265,50 @@
     </div>
 
     <script>
+      /* --- ルビマークアップ処理 --- */
+      /**
+       * ルビマークアップ文字列をHTMLに変換する
+       * 形式: |対象の文字《ルビ》
+       * 出力: <ruby>対象の文字<rt>ルビ</rt></ruby>
+       */
+      function renderRubyToHtml(text) {
+        const container = document.createElement("div");
+        const rubyRegex = /\|([^《]*?)《([^》]*?)》/g;
+        let lastIndex = 0;
+        let match;
+
+        while ((match = rubyRegex.exec(text)) !== null) {
+          // ルビ前のテキスト
+          if (match.index > lastIndex) {
+            container.appendChild(
+              document.createTextNode(text.substring(lastIndex, match.index)),
+            );
+          }
+          // ルビ要素を作成
+          const rubyEl = document.createElement("ruby");
+          rubyEl.textContent = match[1]; // base text
+          const rtEl = document.createElement("rt");
+          rtEl.textContent = match[2]; // ruby text
+          rubyEl.appendChild(rtEl);
+          container.appendChild(rubyEl);
+          lastIndex = rubyRegex.lastIndex;
+        }
+
+        // 最後のテキスト
+        if (lastIndex < text.length) {
+          container.appendChild(
+            document.createTextNode(text.substring(lastIndex)),
+          );
+        }
+
+        // マークアップがない場合は、元のテキストのみ
+        if (lastIndex === 0) {
+          container.appendChild(document.createTextNode(text));
+        }
+
+        return container;
+      }
+
       /* --- 1. データ読み込み --- */
       const params = new URLSearchParams(window.location.search);
       const targetId = params.get("id");
@@ -273,7 +326,12 @@
           if (!item.text.trim()) return;
           const p = document.createElement("div");
           p.className = "tanka";
-          p.textContent = item.text;
+          // ルビマークアップをHTMLに変換してdivに追加
+          const rubyHtml = renderRubyToHtml(item.text);
+          // divの内容をrubyHtmlのchildrenで置き換える
+          while (rubyHtml.firstChild) {
+            p.appendChild(rubyHtml.firstChild);
+          }
           container.appendChild(p);
         });
       } else if (targetId) {
