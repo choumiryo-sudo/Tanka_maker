@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utayomi - 短歌執筆用エディタ</title>
+    <style>
+      /* 全体設定 */
+      :root {
+        --bg-color: #f5f5f5;
+        --paper-color: #ffffff;
+        --text-color: #333333;
+        --comment-color: #aaaaaa;
+        --active-line-bg: rgba(0, 0, 0, 0.03);
+        --active-line-border: #dddddd;
+        --border-color: #cccccc;
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: sans-serif; /* デフォルトゴシック体 */
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        overflow: hidden;
+      }
+
+      #app {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      /* ヘッダー */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: var(--paper-color);
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        z-index: 10;
+      }
+
+      .header-left,
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .stat-badge {
+        font-size: 0.9rem;
+        background: #eee;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+
+      button {
+        padding: 6px 12px;
+        background-color: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-family: inherit;
+      }
+      button:hover {
+        background-color: #f0f0f0;
+      }
+
+      /* ワークスペース（エディタ部分） */
+      #workspace {
+        flex-grow: 1;
+        display: flex;
+        padding: 20px;
+        box-sizing: border-box;
+        gap: 10px;
+        overflow: hidden;
+        justify-content: center;
+      }
+
+      /* 用紙のコンテナ */
+      #paper-container {
+        display: flex;
+        background-color: var(--paper-color);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
+        width: 100%;
+        max-width: 800px;
+        height: 100%;
+        position: relative;
+      }
+
+      /* 横書きモード */
+      .mode-horizontal #paper-container {
+        flex-direction: row;
+      }
+      .mode-horizontal #gutter {
+        border-right: 1px solid #eee;
+        width: 40px;
+        padding-top: 20px;
+      }
+      .mode-horizontal #editor,
+      .mode-horizontal #backdrop {
+        padding: 20px;
+        writing-mode: horizontal-tb;
+      }
+
+      /* 縦書きモード */
+      .mode-vertical #paper-container {
+        flex-direction: column;
+      }
+      .mode-vertical #gutter {
+        border-bottom: 1px solid #eee;
+        height: 40px;
+        padding-right: 20px;
+        writing-mode: vertical-rl;
+      }
+      .mode-vertical #editor,
+      .mode-vertical #backdrop {
+        padding: 20px;
+        writing-mode: vertical-rl;
+      }
+
+      /* ガター（バッジ表示領域） */
+      #gutter {
+        background-color: #fafafa;
+        display: flex;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+
+      .gutter-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        color: #666;
+        background-color: #e0e0e0;
+        border-radius: 10px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .gutter-badge:hover {
+        background-color: #ccc;
+      }
+
+      /* エディタラッパー */
+      #editor-wrapper {
+        position: relative;
+        flex-grow: 1;
+        overflow: hidden;
+      }
+
+      /* テキストエリアとバックドロップ（表示用レイヤー）の共通設定 */
+      #editor,
+      #backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        font-family: inherit;
+        font-size: 18px;
+        line-height: 2; /* 行間を広めに */
+        letter-spacing: 0.05em;
+        white-space: pre; /* 自動改行させない（1行＝1要素を担保） */
+        overflow: auto;
+        border: none;
+        outline: none;
+        margin: 0;
+      }
+
+      /* テキストエリア（透明にして最前面に配置） */
+      #editor {
+        color: transparent;
+        background: transparent;
+        caret-color: var(--text-color);
+        z-index: 2;
+        resize: none;
+      }
+
+      /* バックドロップ（実際の装飾テキストを表示） */
+      #backdrop {
+        z-index: 1;
+        color: var(--text-color);
+        scrollbar-width: none; /* スクロールバー非表示 */
+      }
+      #backdrop::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* 行と装飾 */
+      .line-row {
+        display: inline-block;
+        min-width: 1em;
+        min-height: 1em;
+      }
+      .mode-horizontal .line-row {
+        display: block;
+      }
+      .mode-vertical .line-row {
+        display: inline-block;
+      }
+
+      .active-line {
+        border-bottom: 2px dashed var(--active-line-border);
+        background-color: var(--active-line-bg);
+      }
+      .mode-vertical .active-line {
+        border-bottom: none;
+        border-left: 2px dashed var(--active-line-border);
+      }
+
+      .comment {
+        color: var(--comment-color);
+        font-style: italic;
+      }
+
+      /* モーダル・ポップアップ共通 */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .modal-overlay.active {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        position: relative;
+      }
+      .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: #999;
+      }
+
+      /* 読み仮名修正ポップアップ */
+      #kana-edit-input {
+        width: 80%;
+        padding: 8px;
+        margin: 15px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: 1rem;
+      }
+
+      /* ローディング画面 */
+      #loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/build/kuromoji.js"></script>
+  </head>
+  <body>
+    <div id="loading">辞書データを読み込んでいます...</div>
+
+    <div id="app" class="mode-horizontal">
+      <header>
+        <div class="header-left">
+          <h1>utayomi - 短歌執筆用エディタ</h1>
+          <span class="stat-badge">行数: <span id="line-count">1</span></span>
+        </div>
+        <div class="header-right">
+          <button id="btn-theme">お題</button>
+          <button id="btn-toggle-mode">縦書き/横書き 切替</button>
+          <button id="btn-export">エクスポート (.txt)</button>
+        </div>
+      </header>
+
+      <div id="workspace">
+        <div id="paper-container">
+          <div id="gutter"></div>
+          <div id="editor-wrapper">
+            <div id="backdrop"></div>
+            <textarea
+              id="editor"
+              spellcheck="false"
+              placeholder="ここに短歌を入力してください...&#13;&#10;%% コメントアウトも可能です %%"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="theme-modal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="close-btn" id="close-theme">×</span>
+        <h3>本日のお題</h3>
+        <p
+          id="theme-word"
+          style="font-size: 1.5rem; font-weight: bold; margin: 20px 0"
+        ></p>
+      </div>
+    </div>
+
+    <div id="kana-modal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="close-btn" id="close-kana">×</span>
+        <h3>読み仮名の確認・修正</h3>
+        <p style="font-size: 0.9rem; color: #666; margin-bottom: 0">
+          kuromojiの誤変換がある場合は修正してください
+        </p>
+        <input type="text" id="kana-edit-input" />
+        <br />
+        <button id="btn-save-kana" style="background-color: #333; color: #fff">
+          保存して再カウント
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // --- 初期化と状態管理 ---
+      let tokenizer = null;
+      const editor = document.getElementById("editor");
+      const backdrop = document.getElementById("backdrop");
+      const gutter = document.getElementById("gutter");
+      const lineCountEl = document.getElementById("line-count");
+      const loadingEl = document.getElementById("loading");
+
+      // ユーザーが手動で修正した読み仮名を保持するMap (キー: 元の行のテキスト, 値: 修正後のひらがな)
+      const manualReadings = new Map();
+      // 現在編集中の行インデックスを保持
+      let editingLineIndex = -1;
+
+      // --- DOM操作ヘルパー (innerHTMLを避けるため) ---
+      function createElement(tag, className, text) {
+        const el = document.createElement(tag);
+        if (className) el.className = className;
+        if (text !== undefined) el.textContent = text;
+        return el;
+      }
+
+      // --- kuromoji.jsの初期化 ---
+      kuromoji
+        .builder({
+          dicPath: "https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict/",
+        })
+        .build(function (err, _tokenizer) {
+          if (err) {
+            alert("辞書の読み込みに失敗しました。再読み込みしてください。");
+            console.error(err);
+            return;
+          }
+          tokenizer = _tokenizer;
+          loadingEl.style.display = "none";
+          render(); // 初回レンダリング
+        });
+
+      // --- カタカナをひらがなに変換 ---
+      function katakanaToHiragana(src) {
+        return src.replace(/[\u30a1-\u30f6]/g, function (match) {
+          return String.fromCharCode(match.charCodeAt(0) - 0x60);
+        });
+      }
+
+      // --- 音数カウントロジック ---
+      function countMora(hiraganaStr) {
+        let count = 0;
+        for (let i = 0; i < hiraganaStr.length; i++) {
+          const char = hiraganaStr[i];
+          // 拗音（小さい「ゃゅょ」等）、空白、句読点、記号は0音
+          if (
+            /[ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ\s　、。！？.,!?()（）「」『』]/.test(
+              char,
+            )
+          ) {
+            continue;
+          }
+          // 長音（ー）、促音（っ）、その他通常文字は1音
+          count++;
+        }
+        return count;
+      }
+
+      // --- 1行の解析 ---
+      function analyzeLine(text) {
+        if (text.trim() === "") return { reading: "", count: 0 };
+
+        // ユーザーの手動修正があればそれを優先
+        if (manualReadings.has(text)) {
+          const manualKana = manualReadings.get(text);
+          return { reading: manualKana, count: countMora(manualKana) };
+        }
+
+        // なければkuromojiで解析
+        const tokens = tokenizer.tokenize(text);
+        let fullReadingKatakana = "";
+
+        tokens.forEach((token) => {
+          // readingが存在しない（記号や未知語）場合はsurface_formをそのまま使う
+          fullReadingKatakana += token.reading || token.surface_form;
+        });
+
+        const hiragana = katakanaToHiragana(fullReadingKatakana);
+        return { reading: hiragana, count: countMora(hiragana) };
+      }
+
+      // --- エディタの描画処理（メインロジック） ---
+      function render() {
+        if (!tokenizer) return;
+
+        const text = editor.value;
+        const cursorStart = editor.selectionStart;
+
+        // カーソルのある行番号を特定
+        const textBeforeCursor = text.substring(0, cursorStart);
+        const activeLineIndex = textBeforeCursor.split("\n").length - 1;
+
+        const lines = text.split("\n");
+        lineCountEl.textContent = lines.length;
+
+        // backdropとgutterを初期化
+        backdrop.textContent = "";
+        gutter.textContent = "";
+
+        // 行の高さや幅（縦書き用）の計算基準を取得
+        const computedStyle = window.getComputedStyle(editor);
+        const lineHeight = parseFloat(computedStyle.lineHeight);
+
+        lines.forEach((lineText, index) => {
+          // --- 1. バックドロップ（装飾テキスト）の生成 ---
+          const lineRow = createElement("div", "line-row");
+          if (index === activeLineIndex) {
+            lineRow.classList.add("active-line");
+          }
+
+          // %% コメントアウト %% のパース処理
+          // 正規表現で分割。マッチした部分は '%%...%%' の形式になる
+          const parts = lineText.split(/(%%.*?%%)/g);
+          parts.forEach((part) => {
+            if (
+              part.startsWith("%%") &&
+              part.endsWith("%%") &&
+              part.length >= 4
+            ) {
+              lineRow.appendChild(createElement("span", "comment", part));
+            } else if (part.length > 0) {
+              lineRow.appendChild(document.createTextNode(part));
+            }
+          });
+
+          // 空行の場合は高さを維持するため改行を挿入
+          if (lineText === "") {
+            lineRow.appendChild(createElement("br"));
+          }
+          backdrop.appendChild(lineRow);
+
+          // --- 2. ガター（音数バッジ）の生成 ---
+          const analysis = analyzeLine(lineText);
+
+          const badgeContainer = createElement("div");
+          // エディタの行高とバッジの領域を完全に一致させる
+          const isHorizontal = document
+            .getElementById("app")
+            .classList.contains("mode-horizontal");
+          if (isHorizontal) {
+            badgeContainer.style.height = `${lineHeight}px`;
+            badgeContainer.style.display = "flex";
+            badgeContainer.style.alignItems = "center";
+            badgeContainer.style.justifyContent = "center";
+          } else {
+            badgeContainer.style.width = `${lineHeight}px`;
+            badgeContainer.style.display = "flex";
+            badgeContainer.style.alignItems = "center";
+            badgeContainer.style.justifyContent = "center";
+          }
+
+          // 音数が0（空行など）の場合はバッジを非表示っぽくする
+          if (lineText.trim() !== "") {
+            const badge = createElement(
+              "div",
+              "gutter-badge",
+              analysis.count.toString(),
+            );
+            if (isHorizontal) {
+              badge.style.width = "24px";
+              badge.style.height = "24px";
+            } else {
+              badge.style.width = "24px";
+              badge.style.height = "24px";
+            }
+
+            // バッジクリックで読み仮名修正モーダルを開く
+            badge.addEventListener("click", () => {
+              openKanaModal(index, lineText, analysis.reading);
+            });
+            badgeContainer.appendChild(badge);
+          }
+
+          gutter.appendChild(badgeContainer);
+        });
+      }
+
+      // --- イベントリスナー（エディタ） ---
+      editor.addEventListener("input", render);
+      editor.addEventListener("selectionchange", render);
+      editor.addEventListener("click", render);
+      editor.addEventListener("keyup", render);
+
+      // スクロール同期 (textareaとbackdrop, gutterの動きを合わせる)
+      editor.addEventListener("scroll", () => {
+        backdrop.scrollTop = editor.scrollTop;
+        backdrop.scrollLeft = editor.scrollLeft;
+        gutter.scrollTop = editor.scrollTop;
+        gutter.scrollLeft = editor.scrollLeft;
+      });
+
+      // --- 縦書き/横書き 切替 ---
+      document
+        .getElementById("btn-toggle-mode")
+        .addEventListener("click", () => {
+          const app = document.getElementById("app");
+          if (app.classList.contains("mode-horizontal")) {
+            app.classList.remove("mode-horizontal");
+            app.classList.add("mode-vertical");
+          } else {
+            app.classList.remove("mode-vertical");
+            app.classList.add("mode-horizontal");
+          }
+          render(); // モード切替後に行高や幅が変わるため再描画
+        });
+
+      // --- エクスポート機能 (.txt) ---
+      document.getElementById("btn-export").addEventListener("click", () => {
+        const text = editor.value;
+        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "utayomi.txt"; // プロジェクト名を使用
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // --- お題機能 (特別機能②) ---
+      // ※今後、ご自身で自由に単語を追加・編集できます
+      const themeWords = [
+        "春の雪",
+        "自動販売機",
+        "初恋",
+        "終電",
+        "コーヒー",
+        "金木犀",
+        "雨上がり",
+        "猫のあくび",
+        "古本屋",
+        "夕立",
+      ];
+      const themeModal = document.getElementById("theme-modal");
+      const themeWordEl = document.getElementById("theme-word");
+
+      document.getElementById("btn-theme").addEventListener("click", () => {
+        const randomIndex = Math.floor(Math.random() * themeWords.length);
+        themeWordEl.textContent = themeWords[randomIndex];
+        themeModal.classList.add("active");
+      });
+
+      document.getElementById("close-theme").addEventListener("click", () => {
+        themeModal.classList.remove("active");
+      });
+
+      // --- 読み仮名修正機能 (特別機能①) ---
+      const kanaModal = document.getElementById("kana-modal");
+      const kanaInput = document.getElementById("kana-edit-input");
+      let currentOriginalText = "";
+
+      function openKanaModal(lineIndex, originalText, currentKana) {
+        editingLineIndex = lineIndex;
+        currentOriginalText = originalText;
+        kanaInput.value = currentKana;
+        kanaModal.classList.add("active");
+        kanaInput.focus();
+      }
+
+      document.getElementById("close-kana").addEventListener("click", () => {
+        kanaModal.classList.remove("active");
+      });
+
+      document.getElementById("btn-save-kana").addEventListener("click", () => {
+        const newKana = kanaInput.value;
+        // 辞書Mapに手動修正を登録
+        manualReadings.set(currentOriginalText, newKana);
+        kanaModal.classList.remove("active");
+        render(); // 再描画してバッジの数値を更新
+      });
+    </script>
+  </body>
+</html>
