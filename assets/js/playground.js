@@ -138,16 +138,18 @@ function render() {
     const isHorizontal = document
       .getElementById("app")
       .classList.contains("mode-horizontal");
+
+    // 【変更】フレックスボックスの設定を外に出して共通化
+    badgeContainer.style.display = "flex";
+    badgeContainer.style.alignItems = "center";
+    badgeContainer.style.justifyContent = "center";
+
     if (isHorizontal) {
       badgeContainer.style.height = `${lineHeight}px`;
-      badgeContainer.style.display = "flex";
-      badgeContainer.style.alignItems = "center";
-      badgeContainer.style.justifyContent = "center";
+      badgeContainer.style.width = "100%"; // 【追加】横書き時は横幅いっぱいにする
     } else {
       badgeContainer.style.width = `${lineHeight}px`;
-      badgeContainer.style.display = "flex";
-      badgeContainer.style.alignItems = "center";
-      badgeContainer.style.justifyContent = "center";
+      badgeContainer.style.height = "100%"; // 【追加】縦書き時は縦幅いっぱいにする
     }
 
     // 音数が0（空行など）の場合はバッジを非表示っぽくする

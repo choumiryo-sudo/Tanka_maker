@@ -129,6 +129,7 @@ button:hover {
 #gutter {
   background-color: #fafafa;
   display: flex;
+  flex-direction: column; /* 【追加】バッジを行ごとに正確に並べるため */
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -196,16 +197,11 @@ button:hover {
 
 /* 行と装飾 */
 .line-row {
-  display: inline-block;
+  display: block; /* 【変更】縦横共通でブロック要素にし、正確に列を分ける */
   min-width: 1em;
   min-height: 1em;
 }
-.mode-horizontal .line-row {
-  display: block;
-}
-.mode-vertical .line-row {
-  display: inline-block;
-}
+/* .mode-horizontal .line-row と .mode-vertical .line-row の2行は丸ごと削除しました */
 
 .active-line {
   border-bottom: 2px dashed var(--active-line-border);
