@@ -1,12 +1,12 @@
 /* 全体設定 */
 :root {
-  --bg-color: #f5f5f5;
+  --bg-color: #f0f4f8;
   --paper-color: #ffffff;
-  --text-color: #333333;
-  --comment-color: #aaaaaa;
+  --text-color: #2d3748;
+  --comment-color: #718096;
   --active-line-bg: rgba(0, 0, 0, 0.03);
-  --active-line-border: #dddddd;
-  --border-color: #cccccc;
+  --active-line-border: #e2e8f0;
+  --border-color: #e2e8f0;
 }
 
 body,
@@ -282,4 +282,14 @@ button:hover {
   z-index: 999;
   font-size: 1.2rem;
   font-weight: bold;
+}
+
+body.dark {
+  --bg-color: #1a202c;
+  --paper-color: #4a5568;
+  --text-color: #edf2f7;
+  --comment-color: #a0aec0;
+  --active-line-bg: rgba(255, 255, 255, 0.03);
+  --active-line-border: #4a5568;
+  --border-color: #4a5568;
 }
