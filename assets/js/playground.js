@@ -6,10 +6,23 @@ const gutter = document.getElementById("gutter");
 const lineCountEl = document.getElementById("line-count");
 const loadingEl = document.getElementById("loading");
 
-// ユーザーが手動で修正した読み仮名を保持するMap (キー: 元の行のテキスト, 値: 修正後のひらがな)
-const manualReadings = new Map();
-// 現在編集中の行インデックスを保持
+/// 【変更】定数(const)から変数(let)に変更し、ローカルストレージから読み仮名データを復元
+let manualReadings = new Map();
+const savedReadings = localStorage.getItem("utayomi_manual_readings");
+if (savedReadings) {
+  try {
+    manualReadings = new Map(JSON.parse(savedReadings));
+  } catch (e) {
+    console.error("読み仮名データの復元に失敗しました", e);
+  }
+}
 let editingLineIndex = -1;
+
+// 【追加】ローカルストレージからエディタのテキストを復元
+const savedText = localStorage.getItem("utayomi_text");
+if (savedText !== null) {
+  editor.value = savedText;
+}
 
 // --- DOM操作ヘルパー (innerHTMLを避けるため) ---
 function createElement(tag, className, text) {
@@ -49,7 +62,7 @@ function countMora(hiraganaStr) {
     const char = hiraganaStr[i];
     // 拗音（小さい「ゃゅょ」等）、空白、句読点、記号は0音
     if (
-      /[ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ\s　、。！？.,!?()（）「」『』]/.test(
+      /[ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ\s　 、。・+=-！？.,!?()（）「」『』]/.test(
         char,
       )
     ) {
@@ -179,7 +192,11 @@ function render() {
 }
 
 // --- イベントリスナー（エディタ） ---
-editor.addEventListener("input", render);
+// 【変更】入力イベント発生時に、ローカルストレージへテキストを保存する処理を追加
+editor.addEventListener("input", () => {
+  localStorage.setItem("utayomi_text", editor.value);
+  render();
+});
 editor.addEventListener("selectionchange", render);
 editor.addEventListener("click", render);
 editor.addEventListener("keyup", render);
@@ -275,12 +292,17 @@ document.getElementById("close-kana").addEventListener("click", () => {
   kanaModal.classList.remove("active");
 });
 
+/* 修正後 */
 document.getElementById("btn-save-kana").addEventListener("click", () => {
   const newKana = kanaInput.value;
-  // 辞書Mapに手動修正を登録
   manualReadings.set(currentOriginalText, newKana);
+  // 【追加】手動修正した読み仮名のリストをJSON形式にしてローカルストレージに保存
+  localStorage.setItem(
+    "utayomi_manual_readings",
+    JSON.stringify(Array.from(manualReadings.entries())),
+  );
   kanaModal.classList.remove("active");
-  render(); // 再描画してバッジの数値を更新
+  render();
 });
 
 function applyTheme(theme) {
