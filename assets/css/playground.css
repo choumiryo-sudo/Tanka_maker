@@ -1,0 +1,289 @@
+/* 全体設定 */
+:root {
+  --bg-color: #f5f5f5;
+  --paper-color: #ffffff;
+  --text-color: #333333;
+  --comment-color: #aaaaaa;
+  --active-line-bg: rgba(0, 0, 0, 0.03);
+  --active-line-border: #dddddd;
+  --border-color: #cccccc;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: sans-serif; /* デフォルトゴシック体 */
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ヘッダー */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--paper-color);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.stat-badge {
+  font-size: 0.9rem;
+  background: #eee;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+button {
+  padding: 6px 12px;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+button:hover {
+  background-color: #f0f0f0;
+}
+
+/* ワークスペース（エディタ部分） */
+#workspace {
+  flex-grow: 1;
+  display: flex;
+  padding: 20px;
+  box-sizing: border-box;
+  gap: 10px;
+  overflow: hidden;
+  justify-content: center;
+}
+
+/* 用紙のコンテナ */
+#paper-container {
+  display: flex;
+  background-color: var(--paper-color);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  width: 100%;
+  max-width: 800px;
+  height: 100%;
+  position: relative;
+}
+
+/* 横書きモード */
+.mode-horizontal #paper-container {
+  flex-direction: row;
+}
+.mode-horizontal #gutter {
+  border-right: 1px solid #eee;
+  width: 40px;
+  padding-top: 20px;
+}
+.mode-horizontal #editor,
+.mode-horizontal #backdrop {
+  padding: 20px;
+  writing-mode: horizontal-tb;
+}
+
+/* 縦書きモード */
+.mode-vertical #paper-container {
+  flex-direction: column;
+}
+.mode-vertical #gutter {
+  border-bottom: 1px solid #eee;
+  height: 40px;
+  padding-right: 20px;
+  writing-mode: vertical-rl;
+}
+.mode-vertical #editor,
+.mode-vertical #backdrop {
+  padding: 20px;
+  writing-mode: vertical-rl;
+}
+
+/* ガター（バッジ表示領域） */
+#gutter {
+  background-color: #fafafa;
+  display: flex;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.gutter-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #666;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.gutter-badge:hover {
+  background-color: #ccc;
+}
+
+/* エディタラッパー */
+#editor-wrapper {
+  position: relative;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+/* テキストエリアとバックドロップ（表示用レイヤー）の共通設定 */
+#editor,
+#backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 15px; /* 本文文字サイズ */
+  line-height: 2; /* 行間を広めに */
+  letter-spacing: 0.05em;
+  white-space: pre; /* 自動改行させない（1行＝1要素を担保） */
+  overflow: auto;
+  border: none;
+  outline: none;
+  margin: 0;
+}
+
+/* テキストエリア（透明にして最前面に配置） */
+#editor {
+  color: transparent;
+  background: transparent;
+  caret-color: var(--text-color);
+  z-index: 2;
+  resize: none;
+}
+
+/* バックドロップ（実際の装飾テキストを表示） */
+#backdrop {
+  z-index: 1;
+  color: var(--text-color);
+  scrollbar-width: none; /* スクロールバー非表示 */
+}
+#backdrop::-webkit-scrollbar {
+  display: none;
+}
+
+/* 行と装飾 */
+.line-row {
+  display: inline-block;
+  min-width: 1em;
+  min-height: 1em;
+}
+.mode-horizontal .line-row {
+  display: block;
+}
+.mode-vertical .line-row {
+  display: inline-block;
+}
+
+.active-line {
+  border-bottom: 2px dashed var(--active-line-border);
+  background-color: var(--active-line-bg);
+}
+.mode-vertical .active-line {
+  border-bottom: none;
+  border-left: 2px dashed var(--active-line-border);
+}
+
+.comment {
+  color: var(--comment-color);
+  font-style: italic;
+}
+
+/* モーダル・ポップアップ共通 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.modal-overlay.active {
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+}
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #999;
+}
+
+/* 読み仮名修正ポップアップ */
+#kana-edit-input {
+  width: 80%;
+  padding: 8px;
+  margin: 15px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+/* ローディング画面 */
+#loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  font-size: 1.2rem;
+  font-weight: bold;
+}

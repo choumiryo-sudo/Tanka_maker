@@ -627,7 +627,7 @@ function exportTextOnly() {
   }
 
   const content = texts.join("\n");
-  const fileName = `${getFormattedTimestamp()}_texts.txt`;
+  const fileName = `${getFormattedTimestamp()}_tankanoteweb_texts.txt`;
 
   const blob2 = new Blob([content], { type: "text/plain" });
   const url2 = URL.createObjectURL(blob2);
