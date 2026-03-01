@@ -4,9 +4,10 @@
   --paper-color: #ffffff;
   --text-color: #2d3748;
   --comment-color: #718096;
-  --active-line-bg: rgba(0, 0, 0, 0.03);
+  --active-line-bg: #f8fbfd;
   --active-line-border: #e2e8f0;
   --border-color: #e2e8f0;
+  --primary: #4a5568;
 }
 
 body,
@@ -49,26 +50,29 @@ h1 {
   margin: 0;
   font-size: 1.2rem;
   font-weight: bold;
+  color: var(--primary);
 }
 
 .stat-badge {
   font-size: 0.9rem;
-  background: #eee;
+  background: var(--bg-color);
   padding: 4px 8px;
   border-radius: 4px;
 }
 
 button {
   padding: 6px 12px;
-  background-color: #fff;
+  color: var(--primary);
+  background-color: var(--bg-color);
   border: 1px solid var(--border-color);
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
   font-family: inherit;
+  transition: background 0.2s;
 }
 button:hover {
-  background-color: #f0f0f0;
+  background-color: var(--border-color);
 }
 
 /* ワークスペース（エディタ部分） */
@@ -99,7 +103,7 @@ button:hover {
   flex-direction: row;
 }
 .mode-horizontal #gutter {
-  border-right: 1px solid #eee;
+  border-right: 1px solid var(--border-color);
   width: 40px;
   padding-top: 20px;
 }
@@ -114,7 +118,7 @@ button:hover {
   flex-direction: column;
 }
 .mode-vertical #gutter {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
   height: 40px;
   padding-right: 20px;
   writing-mode: vertical-rl;
@@ -127,7 +131,7 @@ button:hover {
 
 /* ガター（バッジ表示領域） */
 #gutter {
-  background-color: #fafafa;
+  background-color: var(--paper-color);
   display: flex;
   flex-direction: column; /* 【追加】バッジを行ごとに正確に並べるため */
   overflow: hidden;
@@ -139,14 +143,14 @@ button:hover {
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
-  color: #666;
-  background-color: #e0e0e0;
+  color: var(--primary);
+  background-color: var(--bg-color);
   border-radius: 10px;
   cursor: pointer;
   user-select: none;
 }
 .gutter-badge:hover {
-  background-color: #ccc;
+  background-color: var(--border-color);
 }
 
 /* エディタラッパー */
@@ -281,7 +285,7 @@ button:hover {
   align-items: center;
   z-index: 999;
   font-size: 1.2rem;
-  font-weight: bold;
+  font-weight: medium;
 }
 
 body.dark {
@@ -292,4 +296,5 @@ body.dark {
   --active-line-bg: rgba(255, 255, 255, 0.03);
   --active-line-border: #4a5568;
   --border-color: #4a5568;
+  --primary: #a0aec0;
 }
