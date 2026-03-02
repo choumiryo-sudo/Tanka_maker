@@ -21,7 +21,8 @@ let editingLineIndex = -1;
 // 【追加】ローカルストレージからエディタのテキストを復元
 const savedText = localStorage.getItem("utayomi_text");
 if (savedText !== null) {
-  editor.value = savedText;
+  // 【変更】改行コードを \n に正規化してからエディタにセットする
+  editor.value = savedText.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 }
 
 // --- DOM操作ヘルパー (innerHTMLを避けるため) ---
@@ -50,26 +51,69 @@ kuromoji
 
 // --- カタカナをひらがなに変換 ---
 function katakanaToHiragana(src) {
-  return src.replace(/[\u30a1-\u30f6]/g, function (match) {
-    return String.fromCharCode(match.charCodeAt(0) - 0x60);
-  });
+  return src
+    .replace(/[\u30a1-\u30f6]/g, function (match) {
+      return String.fromCharCode(match.charCodeAt(0) - 0x60);
+    })
+    .replace(/ヴ/g, "ぶ"); // ヴの特殊処理
 }
 
 // --- 音数カウントロジック ---
 function countMora(hiraganaStr) {
   let count = 0;
+  // 除外文字セット（小さい字、音を持たない文字）
+  const excludeChars = new Set([
+    "ぁ",
+    "ぃ",
+    "ぅ",
+    "ぇ",
+    "ぉ",
+    "ゃ",
+    "ゅ",
+    "ょ",
+    "ゎ", // 小さいひらがな
+    "ァ",
+    "ィ",
+    "ゥ",
+    "ェ",
+    "ォ",
+    "ャ",
+    "ュ",
+    "ョ",
+    "ヮ", // 小さいカタカナ
+    " ",
+    "　", // 空白
+    "、",
+    "。",
+    "・", // 句読点
+    "！",
+    "？",
+    "!",
+    "?",
+    ".",
+    ",",
+    "．",
+    "， ", // 感嘆符等
+    "(",
+    ")",
+    "（",
+    "）",
+    "「",
+    "」",
+    "『",
+    "』", // 括弧
+    "+",
+    "=",
+    "-",
+    "*",
+    "/", // 記号
+  ]);
+
   for (let i = 0; i < hiraganaStr.length; i++) {
     const char = hiraganaStr[i];
-    // 拗音（小さい「ゃゅょ」等）、空白、句読点、記号は0音
-    if (
-      /[ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ\s　 、。・+=-！？.,!?()（）「」『』]/.test(
-        char,
-      )
-    ) {
-      continue;
+    if (!excludeChars.has(char)) {
+      count++;
     }
-    // 長音（ー）、促音（っ）、その他通常文字は1音
-    count++;
   }
   return count;
 }
@@ -101,7 +145,8 @@ function analyzeLine(text) {
 function render() {
   if (!tokenizer) return;
 
-  const text = editor.value;
+  // 【変更】計算のズレを防ぐため、処理直前に改行コードを \n に統一する
+  const text = editor.value.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
   const cursorStart = editor.selectionStart;
 
   // カーソルのある行番号を特定
@@ -194,7 +239,11 @@ function render() {
 // --- イベントリスナー（エディタ） ---
 // 【変更】入力イベント発生時に、ローカルストレージへテキストを保存する処理を追加
 editor.addEventListener("input", () => {
-  localStorage.setItem("utayomi_text", editor.value);
+  // 【変更】保存時にも改行コードを \n に統一する
+  const normalizedText = editor.value
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
+  localStorage.setItem("utayomi_text", normalizedText);
   render();
 });
 editor.addEventListener("selectionchange", render);
