@@ -577,6 +577,11 @@ button:disabled {
   padding-right: 7px;
   border-radius: 50px;
   background-color: var(--bg);
+  transition: background 0.2s;
+}
+
+.popup-open:hover {
+  background-color: var(--border);
 }
 
 .popup-overlay {

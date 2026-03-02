@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>短歌執筆用エディタ</title>
+    <title>短歌メモWeb</title>
     <script src="https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/build/kuromoji.js"></script>
     <link rel="stylesheet" href="../assets/css/playground.css" />
     <link rel="icon" href="../assets/images/favicon_io/favicon.ico" />
@@ -18,13 +18,106 @@
     <div id="app" class="mode-horizontal">
       <header>
         <div class="header-left">
-          <h1>短歌ノートWeb - メモ帳</h1>
+          <h1>短歌メモWeb</h1>
           <span class="stat-badge">行数: <span id="line-count">1</span></span>
         </div>
         <div class="header-right">
           <button id="btn-theme">お題</button>
           <button id="btn-toggle-mode">縦書き/横書き 切替</button>
           <button id="btn-export">↑ エクスポート</button>
+          <input type="checkbox" id="popup" />
+          <label class="popup-open" for="popup">？</label>
+          <div class="popup-overlay">
+            <div class="popup-window">
+              <label class="popup-close" for="popup">
+                <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2="18"
+                    y2="18"
+                    stroke="gray"
+                    stroke-width="2"
+                  ></line>
+                  <line
+                    x1="0"
+                    y1="18"
+                    x2="18"
+                    y2="0"
+                    stroke="gray"
+                    stroke-width="2"
+                  ></line>
+                </svg>
+              </label>
+              <div class="popup-text">
+                <h3 class="explanation-h3">使い方</h3>
+                <p class="explanation">
+                  自由に短歌を考えるためのごくシンプルなメモ帳です。<br />短歌ノートWebよりも試行錯誤に向いています。
+                </p>
+                <p class="explanation">
+                  ※PCでの操作を想定しています。スマートフォン・タブレットなどでの使用は非推奨です。
+                </p>
+                <h3 class="explanation-h3">できること</h3>
+                <h5 class="explanation-h5">基本操作</h5>
+                <p class="explanation">
+                  画面中心の用紙部分に、自由に文字を書き込むことができます。横書き/縦書きの切替も可能です。
+                </p>
+                <h5 class="explanation-h5">音数カウンター</h5>
+                <p class="explanation">
+                  行頭にある数字のバッジは音数カウンターです。<br />その行の文字列を自動で平仮名に開き、行頭の音数（≠文字数）を計算して表示します。
+                </p>
+                <p class="explanation">
+                  カウンター部分をクリックすると平仮名変換された文字列が表示されます。想定した読みに正しく変換されているか確認が可能です。<br />変換に誤りがあった場合は、読み仮名部分を直接編集してください。
+                </p>
+                <p class="explanation">
+                  ※英数字、記号には非対応です。入力した後、読み仮名部分を直接編集してください。
+                </p>
+                <p class="explanation">
+                  [tips]基本的には一行一首を想定していますが、一行一句で分かち書きをして、句ごとの音数を確認する使い方も可能です。
+                </p>
+                <h5 class="explanation-h5">コメントアウト</h5>
+                <p class="explanation">
+                  文字列を「%%」で囲むと、その部分だけ色が薄くなります。
+                  <br />
+                  注釈や自分用のメモなど、本文と区別したい文章に使用することが可能です。
+                  <br />
+                  <br />
+                  例：%% コメント %% → <span class="comment"> コメント </span>
+                </p>
+                <h5 class="explanation-h5">データエクスポート</h5>
+                <p class="explanation">
+                  「エクスポート」ボタンで、書いた内容を.txt形式でダウンロード（バックアップ）できます。定期的なバックアップを推奨します。
+                </p>
+
+                <h5 class="explanation-h5">お題</h5>
+                <p class="explanation">
+                  おまけ機能です。<br />「お題」ボタンを押すと、ランダムに単語が表示されます。<br />短歌のアイデアに行き詰まった時に役立つかもしれません。
+                </p>
+                <h5 class="explanation-h5">[tips]検索</h5>
+                <p class="explanation">
+                  当サイト独自の機能ではありませんが、入力内容が長くなり、目当ての行/文字列を見失った時は「サイト内検索」が便利です。<br />Windows:
+                  Ctrl + F / Mac: Command + F
+                  で、ブラウザの検索機能を呼び出せます。
+                </p>
+                <h5 class="explanation-h5">データのセキュリティについて</h5>
+                <p class="explanation">
+                  入力内容はご利用のブラウザ（ローカルストレージ）にのみ保存され、外部へ送信されることはありません。
+                  ただし、機密情報は入力しないでください。
+                </p>
+                <p class="explanation">
+                  ※ブラウザのデータ/キャッシュ/履歴削除により内容が全消去されます。必要に応じてデータをバックアップ（エクスポート）してください。
+                </p>
+                <h5 class="explanation-h5">関連リンク</h5>
+                <p class="explanation">
+                  <a
+                    href="https://note.com/kikuchi_apricot/n/n712e0ba2e7cb"
+                    target="_blank"
+                    >紹介note</a
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
