@@ -4,7 +4,7 @@
   --paper-color: #ffffff;
   --text-color: #2d3748;
   --comment-color: #b4bdcb;
-  --active-line-bg: #f8fbfd;
+  --active-line-bg: #f0f4f8;
   --active-line-border: #e2e8f0;
   --border-color: #e2e8f0;
   --primary: #4a5568;
@@ -148,6 +148,7 @@ button:hover {
   border-radius: 10px;
   cursor: pointer;
   user-select: none;
+  writing-mode: horizontal-tb;
 }
 .gutter-badge:hover {
   background-color: var(--border-color);
@@ -171,7 +172,7 @@ button:hover {
   box-sizing: border-box;
   font-family: inherit;
   font-size: 15px; /* 本文文字サイズ */
-  line-height: 2; /* 行間を広めに */
+  line-height: 2.1; /* 行間を広めに */
   letter-spacing: 0.05em;
   white-space: pre; /* 自動改行させない（1行＝1要素を担保） */
   overflow: auto;
@@ -208,12 +209,12 @@ button:hover {
 /* .mode-horizontal .line-row と .mode-vertical .line-row の2行は丸ごと削除しました */
 
 .active-line {
-  border-bottom: 2px dashed var(--active-line-border);
+  border-bottom: 0px dashed var(--active-line-border);
   background-color: var(--active-line-bg);
 }
 .mode-vertical .active-line {
   border-bottom: none;
-  border-left: 2px dashed var(--active-line-border);
+  border-left: 0px dashed var(--active-line-border);
 }
 
 .comment {
