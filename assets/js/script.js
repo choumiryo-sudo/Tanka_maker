@@ -509,10 +509,15 @@ function kataToHira(str) {
   });
 }
 
+// --- 音数カウントロジック ---
+// 日本語文字のみを抽出し、「ひらがな+小さい字」を1モーラとして扱う
 function countMora(text) {
+  // 日本語文字（ひらがな・カタカナ）のみを抽出
   let clean = text.replace(/[^ぁ-んァ-ンー]/g, "");
+  // カタカナをひらがなに統一
   clean = kataToHira(clean);
   if (!clean) return 0;
+  // 「ひらがな+小さい字」を1文字に置き換えてモーラを正確にカウント
   let processed = clean.replace(/[ぁ-ん][ゃゅょぁぃぅぇぉ]/g, "*");
   return processed.length;
 }

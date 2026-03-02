@@ -59,64 +59,15 @@ function katakanaToHiragana(src) {
 }
 
 // --- 音数カウントロジック ---
-function countMora(hiraganaStr) {
-  let count = 0;
-  // 除外文字セット（小さい字、音を持たない文字）
-  const excludeChars = new Set([
-    "ぁ",
-    "ぃ",
-    "ぅ",
-    "ぇ",
-    "ぉ",
-    "ゃ",
-    "ゅ",
-    "ょ",
-    "ゎ", // 小さいひらがな
-    "ァ",
-    "ィ",
-    "ゥ",
-    "ェ",
-    "ォ",
-    "ャ",
-    "ュ",
-    "ョ",
-    "ヮ", // 小さいカタカナ
-    " ",
-    "　", // 空白
-    "、",
-    "。",
-    "・", // 句読点
-    "！",
-    "？",
-    "!",
-    "?",
-    ".",
-    ",",
-    "．",
-    "， ", // 感嘆符等
-    "(",
-    ")",
-    "（",
-    "）",
-    "「",
-    "」",
-    "『",
-    "』", // 括弧
-    "+",
-    "=",
-    "-",
-    "*",
-    "/",
-    "%", // 記号
-  ]);
-
-  for (let i = 0; i < hiraganaStr.length; i++) {
-    const char = hiraganaStr[i];
-    if (!excludeChars.has(char)) {
-      count++;
-    }
-  }
-  return count;
+function countMora(text) {
+  // 日本語文字（ひらがな・カタカナ）のみを抽出
+  let clean = text.replace(/[^ぁ-んァ-ンー]/g, "");
+  // カタカナをひらがなに統一
+  clean = katakanaToHiragana(clean);
+  if (!clean) return 0;
+  // 「ひらがな+小さい字」を1モーラとして扱う
+  let processed = clean.replace(/[ぁ-ん][ゃゅょぁぃぅぇぉ]/g, "*");
+  return processed.length;
 }
 
 // --- 1行の解析 ---
