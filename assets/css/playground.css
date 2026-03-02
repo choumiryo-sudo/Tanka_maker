@@ -3,7 +3,7 @@
   --bg-color: #f0f4f8;
   --paper-color: #ffffff;
   --text-color: #2d3748;
-  --comment-color: #718096;
+  --comment-color: #b4bdcb;
   --active-line-bg: #f8fbfd;
   --active-line-border: #e2e8f0;
   --border-color: #e2e8f0;
@@ -247,8 +247,8 @@ button:hover {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 90%;
+  max-width: 600px;
+  width: 150%;
   text-align: center;
   position: relative;
 }
@@ -263,7 +263,7 @@ button:hover {
 
 /* 読み仮名修正ポップアップ */
 #kana-edit-input {
-  width: 80%;
+  width: 90%;
   padding: 8px;
   margin: 15px 0;
   border: 1px solid #ccc;

@@ -106,7 +106,8 @@ function countMora(hiraganaStr) {
     "=",
     "-",
     "*",
-    "/", // 記号
+    "/",
+    "%", // 記号
   ]);
 
   for (let i = 0; i < hiraganaStr.length; i++) {
