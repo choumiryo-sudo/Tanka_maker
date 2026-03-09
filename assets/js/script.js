@@ -9,7 +9,7 @@ if (lists.length > 0) {
 }
 
 // --- 初期化処理 (Kuromojiのロード) --- 【変更】ローカルの辞書ファイルを参照するようにパスを修正
-const DIC_URL = "../assets/dict/";
+const DIC_URL = "assets/dict/";
 
 kuromoji.builder({ dicPath: DIC_URL }).build(function (err, _tokenizer) {
   if (err) {
