@@ -9,7 +9,7 @@ if (lists.length > 0) {
 }
 
 // --- 初期化処理 (Kuromojiのロード) ---
-const DIC_URL = "https://takuyaa.github.io/kuromoji.js/dict//dict/";
+const DIC_URL = "https://takuyaa.github.io/kuromoji.js/dict/";
 
 kuromoji.builder({ dicPath: DIC_URL }).build(function (err, _tokenizer) {
   if (err) {
