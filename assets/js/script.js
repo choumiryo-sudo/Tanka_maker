@@ -8,8 +8,8 @@ if (lists.length > 0) {
   activeSeriesId = lists[0].id;
 }
 
-// --- 初期化処理 (Kuromojiのロード) --- 【変更】ローカルの辞書ファイルを参照するようにパスを修正
-const DIC_URL = "https://unpkg.com/kuromoji@0.1.2/dict/";
+// --- 初期化処理 (Kuromojiのロード) ---
+const DIC_URL = "https://takuyaa.github.io/kuromoji.js/dict//dict/";
 
 kuromoji.builder({ dicPath: DIC_URL }).build(function (err, _tokenizer) {
   if (err) {
