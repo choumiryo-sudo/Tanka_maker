@@ -36,7 +36,7 @@ function createElement(tag, className, text) {
 // --- kuromoji.jsの初期化 ---
 kuromoji
   .builder({
-    dicPath: "../assets/dict/", // 【変更】ローカルの辞書ファイルを参照するようにパスを修正
+    dicPath: "https://unpkg.com/kuromoji@0.1.2/dict/", // 【変更】ローカルの辞書ファイルを参照するようにパスを修正
   })
   .build(function (err, _tokenizer) {
     if (err) {
