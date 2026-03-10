@@ -342,6 +342,12 @@ button:disabled {
   background: var(--card-bg);
 }
 
+.series-header-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .delete-list-btn,
 .preview-btn {
   background-color: var(--bg);
@@ -352,7 +358,6 @@ button:disabled {
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.2s;
-  margin-right: 10px;
   width: 120px;
 }
 
@@ -729,12 +734,75 @@ body.dark {
 
 /* レスポンシブ対応（スマホ） */
 @media (max-width: 768px) {
-  header {
+  #exportBtn,
+  #exportTextBtn,
+  #importBtn,
+  .upload-label,
+  #file-name,
+  .header-right {
     display: none;
   }
 
-  .preview-btn {
-    display: none;
+  header h1 {
+    margin-left: 20px;
+    font-size: 1.5rem;
+  }
+
+  .popup-open {
+    font-size: 110%;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .theme-toggle {
+    margin-right: 5px;
+  }
+
+  .popup-window {
+    width: 60vw;
+    max-width: 400px;
+    max-height: 60vh;
+  }
+
+  .popup-close {
+    display: flex;
+    margin-left: 0;
+  }
+
+  .explanation,
+  .explanation-h3,
+  .explanation-h5,
+  dt,
+  dd,
+  li {
+    font-size: 90%;
+  }
+
+  .series-title-input {
+    margin-right: 10px;
+  }
+
+  .series-header-buttons {
+    margin-right: 20px;
+    margin-bottom: 13px;
+  }
+
+  a.editor-link-btn {
+    font-size: 0.6rem;
+  }
+
+  .drag-handle-icon {
+    right: 3px;
+    top: 30px;
+    padding: 10px 15px;
+    font-size: 1.2rem;
+  }
+
+  .preview-btn,
+  .delete-list-btn {
+    width: 150%;
+    font-size: 40%;
+    padding: 2px;
   }
 
   body {
@@ -751,11 +819,20 @@ body.dark {
     border-bottom: 1px solid var(--border);
     max-height: 200px; /* リストが長くなりすぎないように */
   }
+
+  input.tanka-content,
+  input.reading-input {
+    font-size: 80%;
+    padding: -5%;
+    width: 90%;
+  }
+
   .main-content {
     padding: 15px;
     overflow: visible;
   }
-  .delete-list-btn-side {
-    margin-left: 20px;
+
+  footer {
+    font-size: 0.7rem;
   }
 }

@@ -131,19 +131,25 @@ function renderActiveSeries() {
   };
   headerDiv.appendChild(titleInput);
 
+  // buttons container
+  const buttonsContainer = document.createElement("div");
+  buttonsContainer.className = "series-header-buttons";
+
   // preview button
   const previewBtn = document.createElement("button");
   previewBtn.className = "preview-btn";
   previewBtn.textContent = "プレビュー";
   previewBtn.onclick = openPreview;
-  headerDiv.appendChild(previewBtn);
+  buttonsContainer.appendChild(previewBtn);
 
   // delete button
   const deleteBtn = document.createElement("button");
   deleteBtn.className = "delete-list-btn";
   deleteBtn.textContent = "リスト削除";
   deleteBtn.onclick = deleteCurrentSeries;
-  headerDiv.appendChild(deleteBtn);
+  buttonsContainer.appendChild(deleteBtn);
+
+  headerDiv.appendChild(buttonsContainer);
 
   seriesEl.appendChild(headerDiv);
 
