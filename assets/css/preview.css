@@ -183,7 +183,7 @@ body.dark {
 }
 
 /* レスポンシブ対応 */
-@media (max-width: 768px) {
+@media (max-width: 997px) {
   .toolbar {
     padding: 15px 20px;
     gap: 15px;
