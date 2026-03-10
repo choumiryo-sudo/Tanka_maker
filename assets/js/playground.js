@@ -250,18 +250,27 @@ document.getElementById("btn-export").addEventListener("click", () => {
 });
 
 // --- お題機能 (特別機能②) ---
-// ※今後、ご自身で自由に単語を追加・編集できます
 const themeWords = [
-  "春の雪",
+  "雪",
   "自動販売機",
-  "初恋",
-  "終電",
+  "季節",
+  "電車",
   "コーヒー",
-  "金木犀",
-  "雨上がり",
-  "猫のあくび",
-  "古本屋",
-  "夕立",
+  "道",
+  "雨",
+  "あくび",
+  "爪",
+  "プール",
+  "学校",
+  "嫌い",
+  "足",
+  "カーテン",
+  "ボールペン",
+  "ネクタイ",
+  "靴",
+  "時計",
+  "空",
+  "花",
 ];
 const themeModal = document.getElementById("theme-modal");
 const themeWordEl = document.getElementById("theme-word");
