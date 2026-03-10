@@ -136,6 +136,7 @@ button:hover {
   flex-direction: column; /* 【追加】バッジを行ごとに正確に並べるため */
   overflow: hidden;
   box-sizing: border-box;
+  padding-top: 5px;
 }
 
 .gutter-badge {
@@ -387,4 +388,119 @@ body.dark {
   --active-line-border: #646f82;
   --border-color: #646f82;
   --primary: #a0aec0;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1024px) {
+  header {
+    padding: 10px 15px;
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    font-size: 1rem;
+  }
+
+  .stat-badge {
+    font-size: 0.85rem;
+  }
+
+  button {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    gap: 10px;
+    padding: 8px 12px;
+  }
+
+  .header-left {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .header-right {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  h1 {
+    font-size: 0.95rem;
+  }
+
+  .stat-badge {
+    font-size: 0.8rem;
+    padding: 3px 6px;
+  }
+
+  button {
+    padding: 5px 8px;
+    font-size: 0.75rem;
+    flex: 1;
+    min-width: 60px;
+  }
+
+  .popup-open {
+    margin-right: 0;
+    margin-left: 0;
+    font-size: 110%;
+    padding: 5px 10px;
+  }
+
+  .popup-window {
+    width: 95vw;
+    max-width: 60%;
+    max-height: 75vh;
+    padding: 20px;
+  }
+
+  .popup-close {
+    margin-left: auto;
+  }
+
+  .modal-content {
+    width: 90%;
+    padding: 15px;
+  }
+
+  #kana-edit-input {
+    width: 85%;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 6px 8px;
+  }
+
+  h1 {
+    font-size: 0.85rem;
+  }
+
+  .stat-badge {
+    font-size: 0.75rem;
+    padding: 2px 4px;
+  }
+
+  button {
+    padding: 4px 6px;
+    font-size: 0.65rem;
+  }
+
+  .popup-window {
+    width: 90vw;
+    padding: 15px;
+  }
+
+  .explanation,
+  dt,
+  dd,
+  li {
+    font-size: 12px;
+  }
 }
