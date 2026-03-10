@@ -180,3 +180,50 @@ body.dark {
   --primary-dark: #cbd5e0;
   --accent: #9b3333;
 }
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .toolbar {
+    padding: 15px 20px;
+    gap: 15px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .toolbar label {
+    margin-bottom: 5px;
+  }
+
+  select,
+  input[type="color"],
+  #username-input {
+    width: 100%;
+    max-width: none;
+  }
+
+  button.download-btn {
+    margin-left: 0;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .preview-wrapper {
+    max-width: 100%;
+  }
+
+  #capture-target {
+    margin-top: 250px;
+    overflow: scroll;
+  }
+
+  .tanka-container {
+    padding-left: 50px;
+  }
+}
