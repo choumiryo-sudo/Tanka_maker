@@ -94,9 +94,26 @@ document.getElementById("download-btn").addEventListener("click", async () => {
     // フォントの読み込み完了を待つ（これが原因で止まることがあるため念のため）
     await document.fonts.ready;
 
-    // html-to-image で画像生成
-    // pixelRatio: 2 で高解像度化（Retina対応）
-    const dataUrl = await htmlToImage.toPng(target, { pixelRatio: 2 });
+    // 1. 要素の「本来のサイズ」を取得
+    // scrollWidth/Height を使うことで、画面外に隠れている部分も含めたサイズが取れます
+    const width = target.scrollWidth;
+    const height = target.scrollHeight;
+
+    const dataUrl = await htmlToImage.toPng(target, {
+      pixelRatio: 2,
+      width: width, // 出力サイズを固定
+      height: height, // 出力サイズを固定
+      // スタイルを一時的にリセット（念のため）
+      // 【重要】描画の開始位置を要素の左上に強制固定
+      style: {
+        transform: "none",
+        // スクロールによるズレを防ぐため、位置をリセット
+        position: "relative",
+        overflow: "visible",
+        top: "0",
+        left: "0",
+      },
+    });
 
     const link = document.createElement("a");
     link.download = (series ? series.title : "utayomi_preview") + ".png";
