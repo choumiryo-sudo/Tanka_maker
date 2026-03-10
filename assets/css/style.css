@@ -177,6 +177,10 @@ h1 {
   flex-direction: column;
 }
 
+.loading-message {
+  color: #2d3748;
+}
+
 /* フッター */
 footer {
   background-color: var(--card-bg);
@@ -249,6 +253,7 @@ header a:hover {
 input[type="text"],
 textarea {
   background-color: var(--bg);
+  color: var(--text);
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
