@@ -246,12 +246,12 @@ function renderActiveSeries() {
     if (item.history.length === 0) {
       historyPanel.textContent = "履歴はありません";
     } else {
-      item.history.forEach((h, i) => {
+      [...item.history].reverse().forEach((h, i) => {
         const historyRow = document.createElement("div");
         historyRow.className = "history-row";
 
         const smallNum = document.createElement("small");
-        smallNum.textContent = `${i + 1}:`;
+        smallNum.textContent = `${item.history.length - i}:`;
         historyRow.appendChild(smallNum);
 
         const historyText = document.createTextNode(` ${h}`);
@@ -400,6 +400,12 @@ function updateItemText(itemIndex, newText) {
   if (item.text === newText) return;
 
   item.history.push(item.text);
+
+  // 履歴を最新20件までに制限
+  if (item.history.length > 20) {
+    item.history.shift(); // 最も古い履歴を削除
+  }
+
   item.text = newText;
 
   // 読みと音数も更新
