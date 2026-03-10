@@ -110,6 +110,7 @@ document.getElementById("download-btn").addEventListener("click", async () => {
         // スクロールによるズレを防ぐため、位置をリセット
         position: "relative",
         overflow: "visible",
+        margin: "0",
         top: "0",
         left: "0",
       },

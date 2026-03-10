@@ -125,7 +125,6 @@ span#output {
   flex-wrap: nowrap;
   height: 100%;
   gap: 3.5em;
-  margin-left: 20px;
 }
 
 h1 {
@@ -222,10 +221,5 @@ body.dark {
 
   #capture-target {
     margin-top: 250px;
-    overflow: auto;
-  }
-
-  .tanka-container {
-    padding-left: 50px;
   }
 }
