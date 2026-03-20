@@ -354,11 +354,20 @@ function initThemeToggle() {
 initThemeToggle();
 
 // --- 全文コピー機能（ヘッダーの「全文コピー」ボタン） ---
+// 指定フォーマットのコメント（%% ... %%）を除去してコピーする
+function stripInlineComments(text) {
+  return text
+    .split("\n")
+    .map((line) => line.replace(/%%.*?%%/g, "").replace(/\s+$/g, ""))
+    .join("\n");
+}
+
 const copyAllBtn = document.getElementById("btn-copy-all");
 if (copyAllBtn) {
   copyAllBtn.addEventListener("click", async () => {
-    // 改行コードを正規化してコピー
-    const text = editor.value.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    // 改行コードを正規化して、%%...%% コメントを除去してコピー
+    const normalized = editor.value.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    const text = stripInlineComments(normalized);
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(text);
@@ -431,6 +440,7 @@ function insertRuby(textarea) {
   textarea.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
+// --- コメント挿入ショートカット (Ctrl/Cmd + ;) ---
 const commentEditor = document.getElementById("editor");
 
 commentEditor.addEventListener("keydown", (e) => {
