@@ -379,3 +379,50 @@ if (copyAllBtn) {
     }
   });
 }
+
+// テキストエリアの要素（IDはご自身のアプリに合わせて変更してください）
+const rubyeditor = document.getElementById("editor");
+
+rubyeditor.addEventListener("keydown", (e) => {
+  // Ctrlキー(Windows) または Metaキー(Mac) + 'l'
+  if ((e.ctrlKey || e.metaKey) && e.key === "l") {
+    // ブラウザ標準の動作（アドレスバーへのフォーカスなど）を防止
+    e.preventDefault();
+
+    insertRuby(rubyeditor);
+  }
+});
+
+function insertRuby(textarea) {
+  const start = textarea.selectionStart; // 選択開始位置
+  const end = textarea.selectionEnd; // 選択終了位置
+  const value = textarea.value;
+
+  // 1. 現在選択されているテキストを取得
+  const selectedText = value.substring(start, end);
+  const hasSelection = start !== end; // テキストを選択中かどうか
+
+  // 2. 挿入する文字列を組み立て
+  // 選択中： |選択文字《》
+  // 未選択： |《》
+  const rubyText = `|${selectedText}《》`;
+
+  // 3. テキストエリアの内容を書き換え
+  textarea.setRangeText(rubyText, start, end, "end");
+
+  // 4. カーソル位置の条件分岐
+  let newCursorPos;
+  if (hasSelection) {
+    // 【テキスト選択あり】例：|漢字《|》
+    // 全体（|漢字《》）の長さから 1 引いた位置（》の手前）
+    newCursorPos = start + rubyText.length - 1;
+  } else {
+    // 【テキスト選択なし】例：||《》
+    // パイプ記号の直後（開始位置 + 1）
+    newCursorPos = start + 1;
+  }
+
+  // 5. カーソルをセットしてフォーカス
+  textarea.setSelectionRange(newCursorPos, newCursorPos);
+  textarea.focus();
+}
