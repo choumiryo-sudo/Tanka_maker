@@ -322,7 +322,7 @@ button:disabled {
 .series-title-input {
   font-size: 1.5rem;
   font-weight: bold;
-  margin-right: 10%;
+  margin-right: 5%;
   border: 1px solid transparent;
   background: transparent;
   color: var(--text);
@@ -718,6 +718,16 @@ li {
   border-right: 1px solid var(--border);
   padding-right: 10px;
   margin-right: 10px;
+}
+
+.item-status {
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background-color: var(--card-bg);
+  color: var(--primary);
+  font-size: 0.75rem;
+  margin-right: 3%;
 }
 
 /* body.dark がついたらライトの :root を上書きしてダークテーマを強制 */

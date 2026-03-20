@@ -75,9 +75,25 @@ function renderSidebar() {
     const date = new Date(series.id);
     const dateStr = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
 
-    // タイトルを表示するdiv
+    // タイトルを表示するdiv（右側にステータスバッジを付与）
     const titleDiv = document.createElement("div");
+    titleDiv.className = "sidebar-title";
     titleDiv.textContent = series.title;
+
+    const statusMap = {
+      undone: { label: "未", title: "未完成" },
+      done: { label: "完", title: "完成" },
+      discarded: { label: "没", title: "没" },
+    };
+    const currentStatus = series.status || "undone";
+    const statusBadge = document.createElement("span");
+    statusBadge.className = "sidebar-status-badge";
+    statusBadge.textContent = (
+      statusMap[currentStatus] || statusMap.undone
+    ).label;
+    statusBadge.title = (statusMap[currentStatus] || statusMap.undone).title;
+
+    titleDiv.appendChild(statusBadge);
     li.appendChild(titleDiv);
 
     // 日付とボタンを表示するspan
@@ -150,6 +166,38 @@ function renderActiveSeries() {
     updateSeriesTitle(this.value);
   };
   headerDiv.appendChild(titleInput);
+
+  // ステータスプルダウン
+  const itemStatus = document.createElement("select");
+  itemStatus.className = "item-status";
+  itemStatus.name = "item-status";
+  // 3. 選択肢（option）のデータを用意
+  const options = [
+    { value: "undone", text: "未完成" },
+    { value: "done", text: "完成" },
+    { value: "discarded", text: "没" },
+  ];
+
+  // ループでoptionを作成してselectに追加
+  options.forEach((data) => {
+    const option = document.createElement("option");
+    option.value = data.value;
+    option.textContent = data.text;
+    itemStatus.appendChild(option);
+  });
+
+  headerDiv.appendChild(itemStatus);
+
+  // 現在の連作のステータスを復元（なければ 'undone' を使う）
+  itemStatus.value = series.status || "undone";
+
+  // ステータス変更時には連作オブジェクトに保存してLocalStorageに書き込む
+  // かつサイドバー表示を即座に更新する
+  itemStatus.onchange = function () {
+    series.status = this.value;
+    saveData();
+    renderSidebar();
+  };
 
   // buttons container
   const buttonsContainer = document.createElement("div");
@@ -337,6 +385,8 @@ function createNewSeries() {
   const newSeries = {
     id: newSeriesId,
     title: title,
+    // 連作のステータス（デフォルトは未完成）
+    status: "undone",
     items: items,
   };
 
