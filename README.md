@@ -76,4 +76,4 @@
 
 ## 関連記事
 
-[紹介note](https://note.com/kikuchi_apricot/n/n712e0ba2e7cb)
+[note（リリースノート）](https://note.com/kikuchi_apricot/n/n712e0ba2e7cb)

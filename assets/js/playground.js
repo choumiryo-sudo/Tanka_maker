@@ -352,3 +352,30 @@ function initThemeToggle() {
 
 // 初期化呼び出し
 initThemeToggle();
+
+// --- 全文コピー機能（ヘッダーの「全文コピー」ボタン） ---
+const copyAllBtn = document.getElementById("btn-copy-all");
+if (copyAllBtn) {
+  copyAllBtn.addEventListener("click", async () => {
+    // 改行コードを正規化してコピー
+    const text = editor.value.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      const old = copyAllBtn.textContent;
+      copyAllBtn.textContent = "コピーしました";
+      setTimeout(() => (copyAllBtn.textContent = old), 1500);
+    } catch (e) {
+      alert("クリップボードにコピーできませんでした。");
+      console.error(e);
+    }
+  });
+}
