@@ -422,7 +422,9 @@ button:disabled {
 }
 
 .tanka-content:focus {
-  border-bottom: 1px dashed var(--primary);
+  outline: none;
+  border-color: var(--primary);
+  background: var(--card-bg);
 }
 
 /* 読み仮名と音数 */
@@ -452,8 +454,8 @@ button:disabled {
 
 .reading-input:focus {
   outline: none;
-  color: var(--text);
-  background: var(--border);
+  border-color: var(--primary);
+  background: var(--card-bg);
 }
 
 .count-badge {
