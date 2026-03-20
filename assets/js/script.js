@@ -836,7 +836,8 @@ function insertRubyForInput(input) {
 document.addEventListener("keydown", (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "l") {
     const active = document.activeElement;
-    const isTankaContent = active && active.classList && active.classList.contains("tanka-content");
+    const isTankaContent =
+      active && active.classList && active.classList.contains("tanka-content");
     const isInputText = active && active.id === "inputText";
 
     if (isTankaContent || isInputText) {
