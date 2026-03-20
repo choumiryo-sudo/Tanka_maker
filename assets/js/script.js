@@ -81,8 +81,8 @@ function renderSidebar() {
     titleDiv.textContent = series.title;
 
     const statusMap = {
-      undone: { label: "未", title: "未完成" },
-      done: { label: "完", title: "完成" },
+      undone: { label: "未完成", title: "未完成" },
+      done: { label: "完成", title: "完成" },
       discarded: { label: "没", title: "没" },
     };
     const currentStatus = series.status || "undone";

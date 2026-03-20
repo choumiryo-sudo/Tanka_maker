@@ -730,6 +730,28 @@ li {
   margin-right: 3%;
 }
 
+.sidebar-status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-left: 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+}
+
+.sidebar-status-badge[title="完成"] {
+  color: var(--primary);
+}
+
+.sidebar-status-badge[title="未完成"] {
+  color: var(--accent);
+}
+
+.sidebar-status-badge[title="没"] {
+  color: rgb(182, 187, 193);
+}
+
 /* body.dark がついたらライトの :root を上書きしてダークテーマを強制 */
 body.dark {
   --bg: #1a202c;
