@@ -2,10 +2,30 @@
 let lists = JSON.parse(localStorage.getItem("utayomi_data")) || [];
 let activeSeriesId = null; // 現在表示中の連作ID
 let tokenizer = null; // 形態素解析器
+const DRAFT_TITLE_KEY = "utayomi_draft_title";
+const DRAFT_TEXT_KEY = "utayomi_draft_text";
 
 // 初期選択（データがあれば最新のものを選択）
 if (lists.length > 0) {
   activeSeriesId = lists[0].id;
+}
+
+// 入力フォーム下書きの復元（リロード時の保持）
+const draftTitleEl = document.getElementById("inputTitle");
+const draftTextEl = document.getElementById("inputText");
+if (draftTitleEl) {
+  const savedTitle = localStorage.getItem(DRAFT_TITLE_KEY);
+  if (savedTitle !== null) draftTitleEl.value = savedTitle;
+  draftTitleEl.addEventListener("input", () => {
+    localStorage.setItem(DRAFT_TITLE_KEY, draftTitleEl.value);
+  });
+}
+if (draftTextEl) {
+  const savedText = localStorage.getItem(DRAFT_TEXT_KEY);
+  if (savedText !== null) draftTextEl.value = savedText;
+  draftTextEl.addEventListener("input", () => {
+    localStorage.setItem(DRAFT_TEXT_KEY, draftTextEl.value);
+  });
 }
 
 // --- 初期化処理 (Kuromojiのロード) --- 【変更】ローカルの辞書ファイルを参照するようにパスを修正
@@ -328,6 +348,8 @@ function createNewSeries() {
   // 入力フォームをクリア
   titleInput.value = "";
   textInput.value = "";
+  localStorage.removeItem(DRAFT_TITLE_KEY);
+  localStorage.removeItem(DRAFT_TEXT_KEY);
 }
 
 function updateSeriesTitle(newTitle) {
@@ -830,6 +852,14 @@ function insertRubyForInput(input) {
 
   input.setSelectionRange(newCursorPos, newCursorPos);
   input.focus();
+
+  // ショートカット挿入後も通常入力と同様に保存処理へ流す
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+
+  // .tanka-content は onchange で保存しているため明示的に発火
+  if (input.classList && input.classList.contains("tanka-content")) {
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }
 }
 
 // グローバルキー監視: Ctrl/Cmd + L でルビ挿入（フォーカスが .tanka-content の場合）

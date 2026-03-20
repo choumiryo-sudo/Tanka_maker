@@ -385,7 +385,7 @@ const rubyeditor = document.getElementById("editor");
 
 rubyeditor.addEventListener("keydown", (e) => {
   // Ctrlキー(Windows) または Metaキー(Mac) + 'l'
-  if ((e.ctrlKey || e.metaKey) && e.key === "l") {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "l") {
     // ブラウザ標準の動作（アドレスバーへのフォーカスなど）を防止
     e.preventDefault();
 
@@ -425,4 +425,7 @@ function insertRuby(textarea) {
   // 5. カーソルをセットしてフォーカス
   textarea.setSelectionRange(newCursorPos, newCursorPos);
   textarea.focus();
+
+  // ショートカット挿入後に input を明示発火して保存・再描画を確実化
+  textarea.dispatchEvent(new Event("input", { bubbles: true }));
 }
