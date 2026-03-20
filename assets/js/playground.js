@@ -380,6 +380,7 @@ if (copyAllBtn) {
   });
 }
 
+// --- ルビ挿入ショートカット (Ctrl/Cmd + L) ---
 // テキストエリアの要素（IDはご自身のアプリに合わせて変更してください）
 const rubyeditor = document.getElementById("editor");
 
@@ -427,5 +428,43 @@ function insertRuby(textarea) {
   textarea.focus();
 
   // ショートカット挿入後に input を明示発火して保存・再描画を確実化
+  textarea.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+const commentEditor = document.getElementById("editor");
+
+commentEditor.addEventListener("keydown", (e) => {
+  // Ctrlキー(Windows) または Metaキー(Mac) + ';' (セミコロン)
+  if ((e.ctrlKey || e.metaKey) && e.key === ";") {
+    // ブラウザの既定の動作を防止
+    e.preventDefault();
+    insertComment(commentEditor);
+  }
+});
+
+function insertComment(textarea) {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
+
+  // 1. 現在選択されているテキストを取得
+  const selectedText = value.substring(start, end);
+
+  // 2. 挿入する文字列を組み立て（%% 選択文字 %%）
+  const commentTemplate = `%% ${selectedText} %%`;
+
+  // 3. テキストエリアの内容を書き換え
+  textarea.setRangeText(commentTemplate, start, end, "end");
+
+  // 4. カーソル位置の計算
+  // 常に「%% 」の直後、かつ「 %%」の前にカーソルを置く
+  // 選択テキストがある場合も、そのテキストの末尾（閉じ記号の直前）に来るように調整
+  const newCursorPos = start + 3 + selectedText.length;
+
+  // 5. カーソルをセットしてフォーカス
+  textarea.setSelectionRange(newCursorPos, newCursorPos);
+  textarea.focus();
+
+  // 保存・再描画用のイベント発火
   textarea.dispatchEvent(new Event("input", { bubbles: true }));
 }
