@@ -804,3 +804,44 @@ function initThemeToggle() {
 
 // 初期化呼び出し
 initThemeToggle();
+
+// --- ルビ挿入（index用ショートカット） ---
+function insertRubyForInput(input) {
+  const start = input.selectionStart;
+  const end = input.selectionEnd;
+  const value = input.value;
+
+  const selectedText = value.substring(start, end);
+  const rubyText = `|${selectedText}《》`;
+
+  if (typeof input.setRangeText === "function") {
+    input.setRangeText(rubyText, start, end, "end");
+  } else {
+    // フォールバック（古いブラウザ）
+    input.value = value.substring(0, start) + rubyText + value.substring(end);
+  }
+
+  let newCursorPos;
+  if (start !== end) {
+    newCursorPos = start + rubyText.length - 1;
+  } else {
+    newCursorPos = start + 1;
+  }
+
+  input.setSelectionRange(newCursorPos, newCursorPos);
+  input.focus();
+}
+
+// グローバルキー監視: Ctrl/Cmd + L でルビ挿入（フォーカスが .tanka-content の場合）
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "l") {
+    const active = document.activeElement;
+    const isTankaContent = active && active.classList && active.classList.contains("tanka-content");
+    const isInputText = active && active.id === "inputText";
+
+    if (isTankaContent || isInputText) {
+      e.preventDefault();
+      insertRubyForInput(active);
+    }
+  }
+});
