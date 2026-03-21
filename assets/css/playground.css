@@ -453,10 +453,11 @@ body.dark {
   }
 
   .popup-window {
-    width: 95vw;
+    width: 100vw;
     max-width: 60%;
     max-height: 75vh;
     padding: 20px;
+    overflow-wrap: anywhere;
   }
 
   .popup-close {
@@ -493,8 +494,9 @@ body.dark {
   }
 
   .popup-window {
-    width: 90vw;
+    width: 100vw;
     padding: 15px;
+    overflow-wrap: anywhere;
   }
 
   .explanation,
@@ -502,5 +504,10 @@ body.dark {
   dd,
   li {
     font-size: 12px;
+  }
+
+  #btn-export {
+    font-size: 0.5rem;
+    padding: 5px 8px;
   }
 }
