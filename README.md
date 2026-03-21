@@ -77,3 +77,16 @@
 ## 関連記事
 
 [note（リリースノート）](https://note.com/kikuchi_apricot/n/n712e0ba2e7cb)
+
+## License
+
+This project uses kuromoji.js (Apache License 2.0)
+https://github.com/takuyaa/kuromoji.js
+
+This project uses html-to-image (MIT License)
+https://github.com/bubkoo/html-to-image
+https://opensource.org/licenses/mit-license.php
+
+This project uses SortableJS (MIT License)
+https://github.com/SortableJS/Sortable
+https://opensource.org/licenses/mit-license.php
