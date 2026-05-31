@@ -62,12 +62,12 @@ function katakanaToHiragana(src) {
 // --- 音数カウントロジック ---
 function countMora(text) {
   // 日本語文字（ひらがな・カタカナ）のみを抽出
-  let clean = text.replace(/[^ぁ-んァ-ンー]/g, "");
+  let clean = text.replace(/[^ぁ-んゔァ-ンヴー]/g, "");
   // カタカナをひらがなに統一
   clean = katakanaToHiragana(clean);
   if (!clean) return 0;
   // 「ひらがな+小さい字」を1モーラとして扱う
-  let processed = clean.replace(/[ぁ-ん][ゃゅょぁぃぅぇぉ]/g, "*");
+  let processed = clean.replace(/[ぁ-んゔ][ゃゅょぁぃぅぇぉ]/g, "*");
   return processed.length;
 }
 
