@@ -3,6 +3,7 @@ let tokenizer = null;
 const editor = document.getElementById("editor");
 const backdrop = document.getElementById("backdrop");
 const gutter = document.getElementById("gutter");
+const gutterContent = document.getElementById("gutter-content");
 const lineCountEl = document.getElementById("line-count");
 const loadingEl = document.getElementById("loading");
 
@@ -110,7 +111,7 @@ function render() {
 
   // backdropとgutterを初期化
   backdrop.textContent = "";
-  gutter.textContent = "";
+  gutterContent.textContent = "";
 
   // 行の高さや幅（縦書き用）の計算基準を取得
   const computedStyle = window.getComputedStyle(editor);
@@ -184,8 +185,22 @@ function render() {
       badgeContainer.appendChild(badge);
     }
 
-    gutter.appendChild(badgeContainer);
+    gutterContent.appendChild(badgeContainer);
   });
+
+  syncScrollPositions();
+}
+
+function syncScrollPositions() {
+  backdrop.scrollTop = editor.scrollTop;
+  backdrop.scrollLeft = editor.scrollLeft;
+
+  const app = document.getElementById("app");
+  if (app.classList.contains("mode-horizontal")) {
+    gutterContent.style.transform = `translate3d(0, ${-editor.scrollTop}px, 0)`;
+  } else {
+    gutterContent.style.transform = `translate3d(${-editor.scrollLeft}px, 0, 0)`;
+  }
 }
 
 // --- イベントリスナー（エディタ） ---
@@ -204,10 +219,7 @@ editor.addEventListener("keyup", render);
 
 // スクロール同期 (textareaとbackdrop, gutterの動きを合わせる)
 editor.addEventListener("scroll", () => {
-  backdrop.scrollTop = editor.scrollTop;
-  backdrop.scrollLeft = editor.scrollLeft;
-  gutter.scrollTop = editor.scrollTop;
-  gutter.scrollLeft = editor.scrollLeft;
+  syncScrollPositions();
 });
 
 // --- 縦書き/横書き 切替 ---

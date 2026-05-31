@@ -139,6 +139,15 @@ button:hover {
   padding-top: 5px;
 }
 
+#gutter-content {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  width: 100%;
+  will-change: transform;
+  transform-origin: top left;
+}
+
 .gutter-badge {
   display: flex;
   align-items: center;
