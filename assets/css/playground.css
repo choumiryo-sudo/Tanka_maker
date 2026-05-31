@@ -148,6 +148,11 @@ button:hover {
   transform-origin: top left;
 }
 
+.mode-vertical #gutter-content {
+  width: max-content;
+  height: 100%;
+}
+
 .gutter-badge {
   display: flex;
   align-items: center;
